@@ -6,7 +6,7 @@ import {
   Route,
   Navigate,
 } from 'react-router-dom';
-import Navbar from './components/Navbar';
+// import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -46,7 +46,7 @@ function App() {
 
   return (
     <Router>
-      <Navbar user={user} setUser={setUser} />
+      {/* <Navbar user={user} setUser={setUser} /> */}
       <Routes>
         <Route path="/" element={<Home user={user} error={error} />} />
         <Route

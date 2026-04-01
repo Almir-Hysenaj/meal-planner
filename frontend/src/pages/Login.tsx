@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import type { User } from '../App';
 
 interface LoginProps {
@@ -11,6 +11,10 @@ interface LoginForm {
   email: string;
   password: string;
 }
+
+const inputClass = 'border p-2 w-full mb-3 rounded-xl border-slate-700/70';
+const buttonClass =
+  'p-2 w-full rounded-2xl border border-slate-700 transform transition-transform duration-200 hover:cursor-pointer hover:scale-102';
 
 const Login = ({ setUser }: LoginProps) => {
   const [form, setForm] = useState<LoginForm>({
@@ -42,37 +46,57 @@ const Login = ({ setUser }: LoginProps) => {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center p-4">
-      <form
-        className="bg-white p-6 rounded shadow-md w-full max-w-lg"
-        onSubmit={handleSubmit}
-      >
-        <h2 className="text-2xl mb-6 font-bold text-center text-gray-800">
-          Login
-        </h2>
+    <div className="min-h-[80vh] flex flex-col items-center pt-15">
+      <h1 className="text-4xl mb-3 font-bold text-center text-slate-700">
+        Budget Tracker
+      </h1>
+      <div className="w-full h-0.5 bg-gray-300/75 my-4 rounded"></div>
 
-        {error && <p className="text-red-500 mb-4">{error}</p>}
+      <div className="px-6 py-7 w-full max-w-xl">
+        <form onSubmit={handleSubmit}>
+          <h2 className="text-2xl mb-5 font-medium text-center text-slate-700">
+            Log in
+          </h2>
 
-        <input
-          type="email"
-          name="email"
-          placeholder="email"
-          className="border p-2 w-full mb-3"
-          value={form.email}
-          onChange={handleChange}
-        />
+          <p className="text-xs text-gray-500 mb-1">Email Address</p>
+          <input
+            type="email"
+            name="email"
+            className={inputClass}
+            value={form.email}
+            onChange={handleChange}
+          />
 
-        <input
-          type="password"
-          name="password"
-          placeholder="password"
-          className="border p-2 w-full mb-3"
-          value={form.password}
-          onChange={handleChange}
-        />
+          <p className="text-xs text-gray-500 mb-1">Password</p>
+          <input
+            type="password"
+            name="password"
+            className={inputClass}
+            value={form.password}
+            onChange={handleChange}
+          />
 
-        <button className="bg-blue-500 text-white p-2 w-full">Login</button>
-      </form>
+          <button
+            className={`${buttonClass} bg-slate-700 text-white mt-5 mb-2 hover:bg-white hover:text-slate-700`}
+          >
+            Log in
+          </button>
+          {error && <p className="text-center text-red-500 mb-4">{error}</p>}
+        </form>
+
+        <div className="w-full h-1 bg-gray-300/50 my-4 rounded"></div>
+
+        <h3 className="font-medium text-md mb-1 text-center text-slate-700">
+          Don't have an account?
+        </h3>
+        <Link to="/register">
+          <button
+            className={`${buttonClass} bg-white text-slate-700 my-2 hover:bg-slate-700 hover:text-white`}
+          >
+            Register
+          </button>
+        </Link>
+      </div>
     </div>
   );
 };
