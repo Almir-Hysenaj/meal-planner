@@ -10,6 +10,7 @@ import {
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Profile from './pages/Profile';
 import NotFound from './components/NotFound';
 
 axios.defaults.withCredentials = true;
@@ -59,6 +60,10 @@ function App() {
         <Route
           path="/register"
           element={user ? <Navigate to="/" /> : <Register setUser={setUser} />}
+        />
+        <Route
+          path="/profile"
+          element={<Profile user={user} setUser={setUser} />}
         />
         <Route path="*" element={<NotFound />} />
       </Routes>
