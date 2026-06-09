@@ -26,7 +26,7 @@ const Navbar = ({ user, setUser }: NavbarProps) => {
           {user ? (
             <button
               onClick={handleLogout}
-              className="bg-red-500 px-3 py-1 rounded"
+              className="bg-red-500 px-3 py-1 rounded cursor-pointer"
             >
               Logout
             </button>

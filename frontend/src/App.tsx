@@ -48,7 +48,10 @@ function App() {
     <Router>
       {/* <Navbar user={user} setUser={setUser} /> */}
       <Routes>
-        <Route path="/" element={<Home user={user} error={error} />} />
+        <Route
+          path="/"
+          element={<Home user={user} error={error} setUser={setUser} />}
+        />
         <Route
           path="/login"
           element={user ? <Navigate to="/" /> : <Login setUser={setUser} />}

@@ -7,11 +7,13 @@ interface RegisterProps {
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
 }
 
+// Tailwind classes
 const inputClass = 'border p-2 w-full mb-3 rounded-xl border-slate-700/70';
 const buttonClass =
-  'p-2 w-full rounded-2xl border border-slate-700 transform transition-transform duration-200 hover:cursor-pointer hover:scale-102';
+  'p-2 w-full rounded-2xl border border-slate-700 transform transition-transform duration-200 hover:cursor-pointer hover:scale-102 hover:font-bold';
 
 const Register = ({ setUser }: RegisterProps) => {
+  // State to hold the form data and error messages
   const [form, setForm] = useState({
     first_name: '',
     last_name: '',
@@ -19,8 +21,10 @@ const Register = ({ setUser }: RegisterProps) => {
     password: '',
   });
   const [error, setError] = useState('');
+
   const navigate = useNavigate();
 
+  // What happens when the user submits the registration form
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
@@ -34,12 +38,13 @@ const Register = ({ setUser }: RegisterProps) => {
 
   return (
     <div className="min-h-[80vh] flex flex-col items-center pt-15">
-      <h1 className="text-4xl mb-3 font-bold text-center text-slate-700">
+      <h1 className="text-4xl mb-3 font-bold text-center text-slate-800">
         Budget Tracker
       </h1>
       <div className="w-full h-0.5 bg-gray-300/75 my-4 rounded"></div>
 
       <div className="px-6 py-7 w-full max-w-xl">
+        {/* Registration form */}
         <form onSubmit={handleSubmit}>
           <h2 className="text-2xl mb-5 font-medium text-center text-slate-700">
             Register
@@ -78,22 +83,23 @@ const Register = ({ setUser }: RegisterProps) => {
           />
 
           <button
-            className={`${buttonClass} bg-slate-700 text-white mt-5 mb-2 hover:bg-white hover:text-slate-700`}
+            className={`${buttonClass} bg-slate-700 text-white mt-5 mb-2`}
           >
             Register
           </button>
+
           {error && <p className="text-center text-red-500 mb-4">{error}</p>}
         </form>
 
         <div className="w-full h-1 bg-gray-300/50 my-4 rounded"></div>
 
+        {/* Login link */}
         <h3 className="font-medium text-md mb-1 text-center text-slate-700">
           Already have an account?
         </h3>
+
         <Link to="/login">
-          <button
-            className={`${buttonClass} bg-white text-slate-700 my-2 hover:bg-slate-700 hover:text-white`}
-          >
+          <button className={`${buttonClass} bg-white text-slate-700 my-2`}>
             Log in
           </button>
         </Link>
