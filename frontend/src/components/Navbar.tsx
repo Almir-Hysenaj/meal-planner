@@ -24,12 +24,20 @@ const Navbar = ({ user, setUser }: NavbarProps) => {
         </Link>
         <div>
           {user ? (
-            <button
-              onClick={handleLogout}
-              className="bg-red-500 px-3 py-1 rounded cursor-pointer"
-            >
-              Logout
-            </button>
+            <>
+              <button
+                onClick={handleLogout}
+                className="bg-red-500 px-3 py-1 rounded cursor-pointer"
+              >
+                Logout
+              </button>
+              <button
+                onClick={() => navigate('/profile')}
+                className="ml-2 px-3 py-1 bg-none text-white rounded cursor-pointer"
+              >
+                Profile
+              </button>
+            </>
           ) : (
             <>
               <Link to="/login" className="mx-2">

@@ -13,7 +13,7 @@ const buttonClass =
   'p-2 w-full rounded-2xl border border-slate-700 transform transition-transform duration-200 hover:cursor-pointer hover:scale-102 hover:font-bold';
 
 const Register = ({ setUser }: RegisterProps) => {
-  // State to hold the form data and error messages
+  // States to hold the form data and error messages
   const [form, setForm] = useState({
     first_name: '',
     last_name: '',
@@ -39,7 +39,7 @@ const Register = ({ setUser }: RegisterProps) => {
   return (
     <div className="min-h-[80vh] flex flex-col items-center pt-15">
       <h1 className="text-4xl mb-3 font-bold text-center text-slate-800">
-        Budget Tracker
+        Meal Planner
       </h1>
       <div className="w-full h-0.5 bg-gray-300/75 my-4 rounded"></div>
 

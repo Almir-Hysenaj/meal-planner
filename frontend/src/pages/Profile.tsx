@@ -12,9 +12,9 @@ interface ProfileProps {
 const Profile = ({ user, setUser }: ProfileProps) => {
   const navigate = useNavigate();
 
+  // States
   const [profileExists, setProfileExists] = useState(false);
   const [loading, setLoading] = useState(true);
-
   const [formData, setFormData] = useState({
     age: '',
     sex: '',
@@ -25,11 +25,13 @@ const Profile = ({ user, setUser }: ProfileProps) => {
     goal_rate: '',
   });
 
+  // Sets the form data to users already existing profile (if exists)
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const data = await getProfile();
         if (data.profileComplete) {
+          // Set profile exists to true
           setProfileExists(true);
           setFormData({
             age: String(data.profile.age),
@@ -56,10 +58,12 @@ const Profile = ({ user, setUser }: ProfileProps) => {
   if (!user) return <Navigate to="/login" />;
   if (loading) return <p>Loading...</p>;
 
+  // Handles user pressing submit button (updating/creating profile)
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
+      // Create object containing current form data
       const profileData = {
         age: Number(formData.age),
         sex: formData.sex,
@@ -86,6 +90,7 @@ const Profile = ({ user, setUser }: ProfileProps) => {
     <>
       <Navbar user={user} setUser={setUser} />
       <div className="min-h-[80vh] flex items-center justify-center p-4">
+        {/* Profile form */}
         <form
           onSubmit={handleSubmit}
           className="bg-white p-8 rounded-lg shadow-md w-full max-w-lg"
@@ -94,6 +99,7 @@ const Profile = ({ user, setUser }: ProfileProps) => {
             {profileExists ? 'Update Profile' : 'Create Profile'}
           </h2>
 
+          {/* Age */}
           <input
             type="number"
             placeholder="Age"
@@ -102,6 +108,7 @@ const Profile = ({ user, setUser }: ProfileProps) => {
             className="w-full mb-4 p-2 border rounded"
           />
 
+          {/* Sex */}
           <select
             value={formData.sex}
             onChange={(e) => setFormData({ ...formData, sex: e.target.value })}
@@ -112,6 +119,7 @@ const Profile = ({ user, setUser }: ProfileProps) => {
             <option value="female">Female</option>
           </select>
 
+          {/* Height */}
           <input
             type="number"
             placeholder="Height in cm"
@@ -122,6 +130,7 @@ const Profile = ({ user, setUser }: ProfileProps) => {
             className="w-full mb-4 p-2 border rounded"
           />
 
+          {/* Weight */}
           <input
             type="number"
             placeholder="Weight in kg"
@@ -132,6 +141,7 @@ const Profile = ({ user, setUser }: ProfileProps) => {
             className="w-full mb-4 p-2 border rounded"
           />
 
+          {/* Activity level */}
           <select
             value={formData.activity_level}
             onChange={(e) =>
@@ -140,16 +150,24 @@ const Profile = ({ user, setUser }: ProfileProps) => {
             className="w-full mb-4 p-2 border rounded"
           >
             <option value="">Select activity level</option>
-            <option value="sedentary">Sedentary</option>
-            <option value="light">Light</option>
-            <option value="moderate">Moderate</option>
+            <option value="not_active">Not Very Active</option>
+            <option value="lightly_active">Lightly Active</option>
             <option value="active">Active</option>
             <option value="very_active">Very Active</option>
           </select>
 
+          {/* Goal */}
           <select
             value={formData.goal}
-            onChange={(e) => setFormData({ ...formData, goal: e.target.value })}
+            // If goal is to maintain, goal_rate will be 0
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                goal: e.target.value,
+                goal_rate:
+                  e.target.value === 'maintain' ? '0' : formData.goal_rate,
+              })
+            }
             className="w-full mb-4 p-2 border rounded"
           >
             <option value="">Select goal</option>
@@ -158,23 +176,27 @@ const Profile = ({ user, setUser }: ProfileProps) => {
             <option value="gain">Gain weight</option>
           </select>
 
-          <select
-            value={formData.goal_rate}
-            onChange={(e) =>
-              setFormData({ ...formData, goal_rate: e.target.value })
-            }
-            className="w-full mb-6 p-2 border rounded"
-          >
-            <option value="">Select goal rate</option>
-            <option value="0">Maintain</option>
-            <option value="0.25">0.25kg/week</option>
-            <option value="0.5">0.5kg/week</option>
-            <option value="1">1kg/week</option>
-          </select>
+          {/* Will only show if goal is to lose/gain weight */}
+          {formData.goal === 'maintain' || formData.goal === '' ? (
+            ''
+          ) : (
+            <select
+              value={formData.goal_rate}
+              onChange={(e) =>
+                setFormData({ ...formData, goal_rate: e.target.value })
+              }
+              className="w-full mb-6 p-2 border rounded"
+            >
+              <option value="">Select goal rate</option>
+              <option value="0.25">0.25kg/week</option>
+              <option value="0.5">0.5kg/week</option>
+              <option value="1">1kg/week</option>
+            </select>
+          )}
 
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+            className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 cursor-pointer"
           >
             {profileExists ? 'Update Profile' : 'Create Profile'}
           </button>

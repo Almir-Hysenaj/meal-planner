@@ -52,7 +52,7 @@ const Login = ({ setUser }: LoginProps) => {
   return (
     <div className="min-h-[80vh] flex flex-col items-center pt-15">
       <h1 className="text-4xl mb-3 font-bold text-center text-slate-800">
-        Budget Tracker
+        Meal Planner
       </h1>
       <div className="w-full h-0.5 bg-gray-300/75 my-4 rounded"></div>
 
