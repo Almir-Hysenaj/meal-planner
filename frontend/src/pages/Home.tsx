@@ -11,16 +11,24 @@ interface HomeProps {
 }
 
 const Home = ({ user, error, setUser }: HomeProps) => {
-  // If the user is not logged in, redirect to the login page
   const navigate = useNavigate();
 
+  // States
   const [profileComplete, setProfileComplete] = useState<boolean | null>(null);
+  const [calories, setCalories] = useState<{
+    maintenanceCalories: number;
+    targetCalories: number;
+  } | null>(null);
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const data = await getProfile();
         setProfileComplete(data.profileComplete);
+
+        if (data.profileComplete) {
+          setCalories(data.calories);
+        }
       } catch (err) {
         console.error('Error fetching profile:', err);
       }
@@ -31,6 +39,7 @@ const Home = ({ user, error, setUser }: HomeProps) => {
     }
   }, [user]);
 
+  // If the user is not logged in, redirect to the login page
   if (!user) return <Navigate to="/login" />;
 
   if (profileComplete === null) {
@@ -61,7 +70,8 @@ const Home = ({ user, error, setUser }: HomeProps) => {
               </div>
             ) : (
               <div>
-                <h3>Meal Recommendations Coming Soon!</h3>
+                <h2>Maintenance Kcals: {calories?.maintenanceCalories}</h2>
+                <h2>Target Kcals: {calories?.targetCalories}</h2>
               </div>
             )}
           </div>

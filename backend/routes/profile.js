@@ -1,7 +1,7 @@
 import express from 'express';
 import pool from '../config/db.js';
 import { protect } from '../middleware/auth.js';
-import { profile } from 'node:console';
+import calorieCalculator from '../utils/calorieCalculator.js';
 
 const router = express.Router();
 
@@ -21,9 +21,13 @@ router.get('/', protect, async (req, res) => {
     });
   }
 
+  const userProfile = profile.rows[0];
+  const calories = calorieCalculator(userProfile);
+
   res.status(200).json({
-    profile: profile.rows[0],
+    profile: userProfile,
     profileComplete: true,
+    calories,
   });
 });
 
