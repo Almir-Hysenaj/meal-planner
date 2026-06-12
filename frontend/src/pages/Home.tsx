@@ -2,12 +2,20 @@ import { useEffect, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import type { User } from '../App';
 import Navbar from '../components/Navbar';
+import MealCard from '../components/MealCard';
 import { getProfile } from '../services/profile';
+import { getMeals } from '../services/meals';
 
 interface HomeProps {
   user: User | null;
   error: string;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
+}
+
+interface Meal {
+  id: number;
+  title: string;
+  image: string;
 }
 
 const Home = ({ user, error, setUser }: HomeProps) => {
@@ -19,6 +27,7 @@ const Home = ({ user, error, setUser }: HomeProps) => {
     maintenanceCalories: number;
     targetCalories: number;
   } | null>(null);
+  const [meals, setMeals] = useState<Meal[]>([]);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -28,6 +37,8 @@ const Home = ({ user, error, setUser }: HomeProps) => {
 
         if (data.profileComplete) {
           setCalories(data.calories);
+          const mealsData = await getMeals();
+          setMeals(mealsData.meals);
         }
       } catch (err) {
         console.error('Error fetching profile:', err);
@@ -56,7 +67,6 @@ const Home = ({ user, error, setUser }: HomeProps) => {
             <h2 className="text-2xl font-bold mb-4 text-gray-800">
               Welcome, {user.first_name} {user.last_name}!
             </h2>
-            <p className="text-gray-600">Email: {user.email}</p>
 
             {!profileComplete ? (
               <div>
@@ -72,6 +82,16 @@ const Home = ({ user, error, setUser }: HomeProps) => {
               <div>
                 <h2>Maintenance Kcals: {calories?.maintenanceCalories}</h2>
                 <h2>Target Kcals: {calories?.targetCalories}</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                  {meals.map((meal) => (
+                    <MealCard
+                      key={meal.id}
+                      // id={meal.id}
+                      title={meal.title}
+                      image={meal.image}
+                    />
+                  ))}
+                </div>
               </div>
             )}
           </div>
