@@ -3,8 +3,9 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import type { User } from '../App';
 import Navbar from '../components/Navbar';
 import MealCard from '../components/MealCard';
+import MealDetailsModal from '../components/MealDetailsModal';
 import { getProfile } from '../services/profile';
-import { getMeals } from '../services/meals';
+import { getMeals, getMealDetails } from '../services/meals';
 
 interface HomeProps {
   user: User | null;
@@ -28,6 +29,7 @@ const Home = ({ user, error, setUser }: HomeProps) => {
     targetCalories: number;
   } | null>(null);
   const [meals, setMeals] = useState<Meal[]>([]);
+  const [selectedMeal, setSelectedMeal] = useState<any | null>(null);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -49,6 +51,15 @@ const Home = ({ user, error, setUser }: HomeProps) => {
       fetchProfile();
     }
   }, [user]);
+
+  const handleMealClick = async (id: number) => {
+    try {
+      const mealDetails = await getMealDetails(id);
+      setSelectedMeal(mealDetails.meal);
+    } catch (err) {
+      console.error('Error fetching meal details: ', err);
+    }
+  };
 
   // If the user is not logged in, redirect to the login page
   if (!user) return <Navigate to="/login" />;
@@ -82,13 +93,26 @@ const Home = ({ user, error, setUser }: HomeProps) => {
               <div>
                 <h2>Maintenance Kcals: {calories?.maintenanceCalories}</h2>
                 <h2>Target Kcals: {calories?.targetCalories}</h2>
+                <select
+                  value="{formData.sex}"
+                  // onChange={(e) =>
+                  //   setFormData({ ...formData, sex: e.target.value })
+                  // }
+                  className="w-2/3 mb-4 p-2 border rounded"
+                >
+                  <option value="popularity">Popular</option>
+                  <option value="protein">Protein</option>
+                  <option value="calories">Calories</option>
+                  <option value="healthiness">Healthiness</option>
+                </select>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
                   {meals.map((meal) => (
                     <MealCard
                       key={meal.id}
-                      // id={meal.id}
+                      id={meal.id}
                       title={meal.title}
                       image={meal.image}
+                      onClick={handleMealClick}
                     />
                   ))}
                 </div>
@@ -97,6 +121,12 @@ const Home = ({ user, error, setUser }: HomeProps) => {
           </div>
         </div>
       </div>
+      {selectedMeal && (
+        <MealDetailsModal
+          meal={selectedMeal}
+          onClose={() => setSelectedMeal(null)}
+        />
+      )}
     </>
   );
 };

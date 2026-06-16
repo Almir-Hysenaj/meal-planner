@@ -1,12 +1,16 @@
 interface MealCardProps {
-  // id: number;
+  id: number;
   title: string;
   image: string;
+  onClick: (id: number) => void;
 }
 
-const MealCard = ({ title, image }: MealCardProps) => {
+const MealCard = ({ id, title, image, onClick }: MealCardProps) => {
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden">
+    <div
+      onClick={() => onClick(id)}
+      className="bg-white rounded-lg shadow-md overflow-hidden"
+    >
       <img src={image} alt={title} className="w-full h-48 object-cover" />
 
       <div className="p-4">
