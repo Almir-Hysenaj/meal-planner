@@ -39,6 +39,8 @@ const meals = [
 ];
 
 router.get('/', protect, async (req, res) => {
+  const { sort, diet, mealType, minCalories, maxCalories } = req.query;
+
   try {
     const apiKey = process.env.SPOONACULAR_API_KEY;
 
@@ -47,9 +49,13 @@ router.get('/', protect, async (req, res) => {
     //   {
     //     params: {
     //       apiKey,
-    //       sort: 'popularity',
     //       number: 5,
     //       addRecipeNutrition: true,
+    //       sort,
+    //       diet,
+    //       type: mealType,
+    //       minCalories,
+    //       maxCalories,
     //     },
     //   },
     // );

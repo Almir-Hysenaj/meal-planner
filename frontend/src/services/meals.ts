@@ -1,7 +1,17 @@
 import axios from 'axios';
 
-export const getMeals = async () => {
-  const res = await axios.get('/api/meals');
+interface GetMealFilters {
+  sort?: string;
+  diet?: string;
+  mealType?: string;
+  minCalories?: number;
+  maxCalories?: number;
+}
+
+export const getMeals = async (filters: GetMealFilters = {}) => {
+  const res = await axios.get('/api/meals', {
+    params: filters,
+  });
   return res.data;
 };
 

@@ -4,6 +4,7 @@ import type { User } from '../App';
 import Navbar from '../components/Navbar';
 import MealCard from '../components/MealCard';
 import MealDetailsModal from '../components/MealDetailsModal';
+import MealFilters from '../components/MealFilters';
 import { getProfile } from '../services/profile';
 import { getMeals, getMealDetails } from '../services/meals';
 
@@ -30,6 +31,13 @@ const Home = ({ user, error, setUser }: HomeProps) => {
   } | null>(null);
   const [meals, setMeals] = useState<Meal[]>([]);
   const [selectedMeal, setSelectedMeal] = useState<any | null>(null);
+  const [filters, setFilters] = useState({
+    sort: 'popularity',
+    diet: '',
+    mealType: '',
+    minCalories: undefined,
+    maxCalories: undefined,
+  });
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -39,7 +47,7 @@ const Home = ({ user, error, setUser }: HomeProps) => {
 
         if (data.profileComplete) {
           setCalories(data.calories);
-          const mealsData = await getMeals();
+          const mealsData = await getMeals({ sort: filters.sort });
           setMeals(mealsData.meals);
         }
       } catch (err) {
@@ -50,7 +58,7 @@ const Home = ({ user, error, setUser }: HomeProps) => {
     if (user) {
       fetchProfile();
     }
-  }, [user]);
+  }, [user, filters.sort]);
 
   const handleMealClick = async (id: number) => {
     try {
@@ -58,6 +66,34 @@ const Home = ({ user, error, setUser }: HomeProps) => {
       setSelectedMeal(mealDetails.meal);
     } catch (err) {
       console.error('Error fetching meal details: ', err);
+    }
+  };
+
+  const handleApplyFilters = async () => {
+    try {
+      const mealsData = await getMeals(filters);
+      setMeals(mealsData.meals);
+    } catch (err) {
+      console.error('Error applying filters: ', err);
+    }
+  };
+
+  const handleClearFilters = async () => {
+    const defaultFilters = {
+      sort: 'popularity',
+      diet: '',
+      mealType: '',
+      minCalories: undefined,
+      maxCalories: undefined,
+    };
+
+    setFilters(defaultFilters);
+
+    try {
+      const mealsData = await getMeals(defaultFilters);
+      setMeals(mealsData.meals);
+    } catch (err) {
+      console.error('Error clearing filters:', err);
     }
   };
 
@@ -93,18 +129,12 @@ const Home = ({ user, error, setUser }: HomeProps) => {
               <div>
                 <h2>Maintenance Kcals: {calories?.maintenanceCalories}</h2>
                 <h2>Target Kcals: {calories?.targetCalories}</h2>
-                <select
-                  value="{formData.sex}"
-                  // onChange={(e) =>
-                  //   setFormData({ ...formData, sex: e.target.value })
-                  // }
-                  className="w-2/3 mb-4 p-2 border rounded"
-                >
-                  <option value="popularity">Popular</option>
-                  <option value="protein">Protein</option>
-                  <option value="calories">Calories</option>
-                  <option value="healthiness">Healthiness</option>
-                </select>
+                <MealFilters
+                  filters={filters}
+                  setFilters={setFilters}
+                  onApply={handleApplyFilters}
+                  onClear={handleClearFilters}
+                />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
                   {meals.map((meal) => (
                     <MealCard
