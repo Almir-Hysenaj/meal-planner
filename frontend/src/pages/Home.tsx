@@ -7,6 +7,11 @@ import MealDetailsModal from '../components/MealDetailsModal';
 import MealFilters from '../components/MealFilters';
 import { getProfile } from '../services/profile';
 import { getMeals, getMealDetails } from '../services/meals';
+import {
+  getSavedMeals,
+  saveMeal,
+  deleteSavedMeal,
+} from '../services/savedMeals';
 
 interface HomeProps {
   user: User | null;
@@ -38,6 +43,7 @@ const Home = ({ user, error, setUser }: HomeProps) => {
     minCalories: undefined,
     maxCalories: undefined,
   });
+  const [savedMeals, setSavedMeals] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -47,6 +53,10 @@ const Home = ({ user, error, setUser }: HomeProps) => {
 
         if (data.profileComplete) {
           setCalories(data.calories);
+
+          const savedMealsData = await getSavedMeals();
+          setSavedMeals(savedMealsData.meals);
+
           const mealsData = await getMeals({ sort: filters.sort });
           setMeals(mealsData.meals);
         }
@@ -66,6 +76,43 @@ const Home = ({ user, error, setUser }: HomeProps) => {
       setSelectedMeal(mealDetails.meal);
     } catch (err) {
       console.error('Error fetching meal details: ', err);
+    }
+  };
+
+  const handleSaveMeal = async () => {
+    if (!selectedMeal) return;
+
+    try {
+      await saveMeal({
+        meal_id: selectedMeal.id,
+        title: selectedMeal.title,
+        image: selectedMeal.image,
+      });
+
+      setSavedMeals((prev) => [
+        ...prev,
+        {
+          meal_id: selectedMeal.id,
+          title: selectedMeal.title,
+          image: selectedMeal.image,
+        },
+      ]);
+    } catch (err) {
+      console.error('Error saving meal:', err);
+    }
+  };
+
+  const handleUnsaveMeal = async () => {
+    if (!selectedMeal) return;
+
+    try {
+      await deleteSavedMeal(selectedMeal.id);
+
+      setSavedMeals((prev) =>
+        prev.filter((meal) => meal.meal_id !== selectedMeal.id),
+      );
+    } catch (err) {
+      console.error('Error removing meal:', err);
     }
   };
 
@@ -103,6 +150,8 @@ const Home = ({ user, error, setUser }: HomeProps) => {
   if (profileComplete === null) {
     return <p>Loading...</p>;
   }
+
+  const isSaved = savedMeals.some((meal) => meal.meal_id === selectedMeal?.id);
 
   return (
     <>
@@ -155,6 +204,9 @@ const Home = ({ user, error, setUser }: HomeProps) => {
         <MealDetailsModal
           meal={selectedMeal}
           onClose={() => setSelectedMeal(null)}
+          isSaved={isSaved}
+          onSave={handleSaveMeal}
+          onUnsave={handleUnsaveMeal}
         />
       )}
     </>

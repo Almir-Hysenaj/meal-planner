@@ -12,6 +12,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
 import NotFound from './components/NotFound';
+import SavedMeals from './pages/SavedMeals';
 
 axios.defaults.withCredentials = true;
 
@@ -64,6 +65,10 @@ function App() {
         <Route
           path="/profile"
           element={<Profile user={user} setUser={setUser} />}
+        />
+        <Route
+          path="/saved"
+          element={<SavedMeals user={user} setUser={setUser} />}
         />
         <Route path="*" element={<NotFound />} />
       </Routes>

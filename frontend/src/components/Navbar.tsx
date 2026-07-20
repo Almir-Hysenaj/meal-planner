@@ -37,6 +37,12 @@ const Navbar = ({ user, setUser }: NavbarProps) => {
               >
                 Profile
               </button>
+              <button
+                onClick={() => navigate('/saved')}
+                className="ml-2 px-3 py-1 bg-none text-white rounded cursor-pointer"
+              >
+                Saved Meals
+              </button>
             </>
           ) : (
             <>

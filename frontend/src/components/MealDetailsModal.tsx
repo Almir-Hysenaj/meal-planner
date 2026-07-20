@@ -1,9 +1,18 @@
 interface MealDetailModalProps {
   meal: any;
   onClose: () => void;
+  isSaved: boolean;
+  onSave: () => void;
+  onUnsave: () => void;
 }
 
-const MealDetailsModal = ({ meal, onClose }: MealDetailModalProps) => {
+const MealDetailsModal = ({
+  meal,
+  onClose,
+  isSaved,
+  onSave,
+  onUnsave,
+}: MealDetailModalProps) => {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 max-w-3xl w-full mx-4 relative max-h-[90vh] overflow-y-auto">
@@ -116,10 +125,27 @@ const MealDetailsModal = ({ meal, onClose }: MealDetailModalProps) => {
           href={meal.sourceUrl}
           target="_blank"
           rel="noreferrer"
-          className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          className="cursor-pointer inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
         >
           View Full Recipe
         </a>
+
+        {/* Save button */}
+        {isSaved ? (
+          <button
+            onClick={onUnsave}
+            className="cursor-pointer ml-3 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+          >
+            Remove from Saved
+          </button>
+        ) : (
+          <button
+            onClick={onSave}
+            className="cursor-pointer ml-3 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+          >
+            Save Meal
+          </button>
+        )}
       </div>
     </div>
   );
