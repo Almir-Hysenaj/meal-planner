@@ -79,24 +79,47 @@ const Home = ({ user, error, setUser }: HomeProps) => {
     }
   };
 
+  const buildSavedMeal = (meal: any) => {
+    const getNutrient = (name: string) =>
+      meal.nutrition.nutrients.find((n: any) => n.name === name)?.amount;
+
+    return {
+      meal_id: meal.id,
+      title: meal.title,
+      image: meal.image,
+
+      cuisines: meal.cuisines,
+      dishTypes: meal.dishTypes,
+      diets: meal.diets,
+
+      vegetarian: meal.vegetarian,
+      vegan: meal.vegan,
+      glutenFree: meal.glutenFree,
+      dairyFree: meal.dairyFree,
+
+      readyInMinutes: meal.readyInMinutes,
+      servings: meal.servings,
+
+      calories: getNutrient('Calories'),
+      protein: getNutrient('Protein'),
+      carbs: getNutrient('Carbohydrates'),
+      fat: getNutrient('Fat'),
+
+      ingredients: meal.extendedIngredients.map(
+        (ingredient: any) => ingredient.name,
+      ),
+    };
+  };
+
   const handleSaveMeal = async () => {
     if (!selectedMeal) return;
 
     try {
-      await saveMeal({
-        meal_id: selectedMeal.id,
-        title: selectedMeal.title,
-        image: selectedMeal.image,
-      });
+      const mealToSave = buildSavedMeal(selectedMeal);
 
-      setSavedMeals((prev) => [
-        ...prev,
-        {
-          meal_id: selectedMeal.id,
-          title: selectedMeal.title,
-          image: selectedMeal.image,
-        },
-      ]);
+      await saveMeal(mealToSave);
+
+      setSavedMeals((prev) => [...prev, mealToSave]);
     } catch (err) {
       console.error('Error saving meal:', err);
     }

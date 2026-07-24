@@ -9,7 +9,7 @@ router.get('/', protect, async (req, res) => {
   const userId = req.user.id;
 
   const savedMeals = await pool.query(
-    `SELECT meal_id, title, image
+    `SELECT *
      FROM saved_meals
      WHERE user_id = $1
      ORDER BY created_at DESC`,
@@ -25,7 +25,25 @@ router.get('/', protect, async (req, res) => {
 router.post('/', protect, async (req, res) => {
   const userId = req.user.id;
 
-  const { meal_id, title, image } = req.body;
+  const {
+    meal_id,
+    title,
+    image,
+    cuisines,
+    dishTypes,
+    diets,
+    vegetarian,
+    vegan,
+    glutenFree,
+    dairyFree,
+    readyInMinutes,
+    servings,
+    calories,
+    protein,
+    carbs,
+    fat,
+    ingredients,
+  } = req.body;
 
   if (!meal_id || !title || !image) {
     return res.status(400).json({
@@ -49,10 +67,56 @@ router.post('/', protect, async (req, res) => {
 
   const newMeal = await pool.query(
     `INSERT INTO saved_meals
-      (user_id, meal_id, title, image)
-     VALUES ($1, $2, $3, $4)
-     RETURNING *`,
-    [userId, meal_id, title, image],
+    (
+    user_id,
+    meal_id,
+    title,
+    image,
+    cuisines,
+    dish_types,
+    diets,
+    vegetarian,
+    vegan,
+    gluten_free,
+    dairy_free,
+    ready_in_minutes,
+    servings,
+    calories,
+    protein,
+    carbs,
+    fat,
+    ingredients
+    )
+    VALUES
+    (
+    $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18
+    )
+    RETURNING *`,
+    [
+      userId,
+      meal_id,
+      title,
+      image,
+
+      cuisines,
+      dishTypes,
+      diets,
+
+      vegetarian,
+      vegan,
+      glutenFree,
+      dairyFree,
+
+      readyInMinutes,
+      servings,
+
+      calories,
+      protein,
+      carbs,
+      fat,
+
+      JSON.stringify(ingredients),
+    ],
   );
 
   res.status(201).json({

@@ -44,23 +44,23 @@ router.get('/', protect, async (req, res) => {
   try {
     const apiKey = process.env.SPOONACULAR_API_KEY;
 
-    // const response = await axios.get(
-    //   'https://api.spoonacular.com/recipes/complexSearch',
-    //   {
-    //     params: {
-    //       apiKey,
-    //       number: 5,
-    //       addRecipeNutrition: true,
-    //       sort,
-    //       diet,
-    //       type: mealType,
-    //       minCalories,
-    //       maxCalories,
-    //     },
-    //   },
-    // );
+    const response = await axios.get(
+      'https://api.spoonacular.com/recipes/complexSearch',
+      {
+        params: {
+          apiKey,
+          number: 5,
+          addRecipeNutrition: true,
+          sort,
+          diet,
+          type: mealType,
+          minCalories,
+          maxCalories,
+        },
+      },
+    );
 
-    res.status(200).json({ meals /*: response.data.results */ });
+    res.status(200).json({ meals: response.data.results });
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: 'Failed to fetch meals' });
