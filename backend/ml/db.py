@@ -1,8 +1,10 @@
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 import psycopg
 
-load_dotenv("../.env")
+BASE_DIR = Path(__file__).resolve().parent
+load_dotenv(BASE_DIR.parent / ".env")
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 

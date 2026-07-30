@@ -3,8 +3,10 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.preprocessing import StandardScaler
 import joblib
-import os
+from pathlib import Path
 
+BASE_DIR = Path(__file__).resolve().parent
+MODEL_DIR = BASE_DIR / "models"
 
 def preprocess_lists(df):
     list_columns = [
@@ -24,15 +26,12 @@ def preprocess_lists(df):
 
 def drop_unused_columns(df):
     columns_to_drop = [
-        "id_x",
-        "id_y",
+        "id",
         "meal_id",
-        "user_id",
         "title",
         "image",
-        "created_at_x",
-        "created_at_y",
-        "updated_at"
+        "user_id",
+        "created_at"
     ]
 
     df = df.drop(columns=columns_to_drop)
@@ -54,37 +53,7 @@ def convert_booleans(df):
 
 
 def encode_categories(df):
-    categorical_columns = [
-        "sex",
-        "activity_level",
-        "goal"
-    ]
-
-    encoder = OneHotEncoder(
-        sparse_output=False,
-        handle_unknown="ignore"
-    )
-
-    encoded = encoder.fit_transform(
-        df[categorical_columns]
-    )
-
-    encoded_df = pd.DataFrame(
-        encoded,
-        columns=encoder.get_feature_names_out(categorical_columns)
-    )
-
-    df = pd.concat(
-        [
-            df.reset_index(drop=True),
-            encoded_df.reset_index(drop=True)
-        ],
-        axis=1
-    )
-
-    df = df.drop(columns=categorical_columns)
-
-    return df, encoder
+    return df, None
 
 
 def create_text_features(df):
@@ -102,23 +71,26 @@ def create_text_features(df):
 
         vectorizer = TfidfVectorizer()
 
-        # Need at least 2 rows for meaningful TF-IDF
-        if len(df[column]) > 1:
-            vectors = vectorizer.fit_transform(df[column])
+        if len(df[column]) > 1 and df[column].str.strip().any():
 
-            vector_df = pd.DataFrame(
-                vectors.toarray(),
-                columns=[
-                    f"{column}_{word}"
-                    for word in vectorizer.get_feature_names_out()
-                ]
-            )
+            try:
+                vectors = vectorizer.fit_transform(df[column])
 
-            text_features.append(vector_df)
-            vectorizers[column] = vectorizer
+                vector_df = pd.DataFrame(
+                    vectors.toarray(),
+                    columns=[
+                        f"{column}_{word}"
+                        for word in vectorizer.get_feature_names_out()
+                    ]
+                )
+
+                text_features.append(vector_df)
+                vectorizers[column] = vectorizer
+
+            except ValueError:
+                print(f"Skipping TF-IDF for {column}: empty vocabulary")
 
         else:
-            # Temporary placeholder while testing with one meal
             print(f"Skipping TF-IDF for {column}: not enough data")
 
 
@@ -147,11 +119,7 @@ def scale_numerical_features(df):
         "calories",
         "protein",
         "carbs",
-        "fat",
-        "age",
-        "height_cm",
-        "weight_kg",
-        "goal_rate"
+        "fat"
     ]
 
     scaler = StandardScaler()
@@ -165,21 +133,21 @@ def scale_numerical_features(df):
 
 def save_preprocessors(encoder, vectorizers, scaler):
 
-    os.makedirs("models", exist_ok=True)
+    MODEL_DIR.mkdir(exist_ok=True)
 
     joblib.dump(
         encoder,
-        "models/category_encoder.pkl"
+        MODEL_DIR / "category_encoder.pkl"
     )
 
     joblib.dump(
         vectorizers,
-        "models/text_vectorizers.pkl"
+        MODEL_DIR / "text_vectorizers.pkl"
     )
 
     joblib.dump(
         scaler,
-        "models/scaler.pkl"
+        MODEL_DIR / "scaler.pkl"
     )
 
     print("Preprocessors saved")

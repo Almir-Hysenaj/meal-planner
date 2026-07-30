@@ -1,5 +1,6 @@
 import pandas as pd
 from db import conn
+from pathlib import Path
 from preprocess import (
     preprocess_lists,
     drop_unused_columns,
@@ -9,6 +10,8 @@ from preprocess import (
     scale_numerical_features,
     save_preprocessors
 )
+
+BASE_DIR = Path(__file__).resolve().parent
 
 # Load saved meals
 meals = pd.read_sql("""
@@ -24,12 +27,8 @@ FROM profiles;
 """, conn)
 
 
-# Merge meals with profiles
-df = meals.merge(
-    profiles,
-    on="user_id",
-    how="left"
-)
+# Keep meals dataset separate
+df = meals.copy()
 
 
 # Apply preprocessing
@@ -51,12 +50,14 @@ save_preprocessors(
     scaler
 )
 
-df.to_csv(
-    "dataset.csv",
-    index=False
-)
-
 print("\nFinal Dataset:")
 print(df.head())
 
 print(df.info())
+
+df.to_csv(
+    BASE_DIR / "processed_dataset.csv",
+    index=False
+)
+
+print("Processed dataset saved")
