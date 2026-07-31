@@ -30,11 +30,13 @@ def drop_unused_columns(df):
         "meal_id",
         "title",
         "image",
-        "user_id",
-        "created_at"
+        "created_at",
     ]
 
-    df = df.drop(columns=columns_to_drop)
+    df = df.drop(
+        columns=columns_to_drop,
+        errors="ignore"
+    )
 
     return df
 
@@ -56,7 +58,11 @@ def encode_categories(df):
     return df, None
 
 
-def create_text_features(df):
+def create_text_features(
+    df,
+    training=True,
+    vectorizers=None
+):
     text_columns = [
         "ingredients",
         "cuisines",
@@ -64,35 +70,49 @@ def create_text_features(df):
         "diets"
     ]
 
-    vectorizers = {}
+    if vectorizers is None:
+        vectorizers = {}
+
     text_features = []
 
     for column in text_columns:
 
-        vectorizer = TfidfVectorizer()
+        if training:
 
-        if len(df[column]) > 1 and df[column].str.strip().any():
+            vectorizer = TfidfVectorizer()
 
-            try:
-                vectors = vectorizer.fit_transform(df[column])
+            if len(df[column]) > 1 and df[column].str.strip().any():
 
-                vector_df = pd.DataFrame(
-                    vectors.toarray(),
-                    columns=[
-                        f"{column}_{word}"
-                        for word in vectorizer.get_feature_names_out()
-                    ]
-                )
+                try:
+                    vectors = vectorizer.fit_transform(df[column])
 
-                text_features.append(vector_df)
-                vectorizers[column] = vectorizer
+                    vectorizers[column] = vectorizer
 
-            except ValueError:
-                print(f"Skipping TF-IDF for {column}: empty vocabulary")
+                except ValueError:
+                    print(f"Skipping TF-IDF for {column}")
+                    continue
+
+            else:
+                print(f"Skipping TF-IDF for {column}")
+                continue
 
         else:
-            print(f"Skipping TF-IDF for {column}: not enough data")
 
+            if column not in vectorizers:
+                continue
+
+            vectorizer = vectorizers[column]
+            vectors = vectorizer.transform(df[column])
+
+        vector_df = pd.DataFrame(
+            vectors.toarray(),
+            columns=[
+                f"{column}_{word}"
+                for word in vectorizer.get_feature_names_out()
+            ]
+        )
+
+        text_features.append(vector_df)
 
     if text_features:
         df = pd.concat(
@@ -101,17 +121,20 @@ def create_text_features(df):
                 *[
                     feature.reset_index(drop=True)
                     for feature in text_features
-                ]
+                ],
             ],
-            axis=1
+            axis=1,
         )
-
 
     df = df.drop(columns=text_columns)
 
     return df, vectorizers
 
-def scale_numerical_features(df):
+def scale_numerical_features(
+    df,
+    training=True,
+    scaler=None
+):
 
     numerical_columns = [
         "ready_in_minutes",
@@ -122,11 +145,19 @@ def scale_numerical_features(df):
         "fat"
     ]
 
-    scaler = StandardScaler()
+    if training:
 
-    df[numerical_columns] = scaler.fit_transform(
-        df[numerical_columns]
-    )
+        scaler = StandardScaler()
+
+        df[numerical_columns] = scaler.fit_transform(
+            df[numerical_columns]
+        )
+
+    else:
+
+        df[numerical_columns] = scaler.transform(
+            df[numerical_columns]
+        )
 
     return df, scaler
 

@@ -1,6 +1,7 @@
 import express from 'express';
 import axios from 'axios';
 import { protect } from '../middleware/auth.js';
+import { runRecommendation } from '../utils/runRecommendation.js';
 
 const router = express.Router();
 
@@ -49,7 +50,7 @@ router.get('/', protect, async (req, res) => {
       {
         params: {
           apiKey,
-          number: 5,
+          number: 20,
           addRecipeNutrition: true,
           sort,
           diet,
@@ -60,10 +61,56 @@ router.get('/', protect, async (req, res) => {
       },
     );
 
-    res.status(200).json({ meals: response.data.results });
+    const formattedMeals = response.data.results.map((meal) => ({
+      id: meal.id,
+      title: meal.title,
+      image: meal.image,
+
+      cuisines: meal.cuisines || [],
+      dish_types: meal.dishTypes || [],
+      diets: meal.diets || [],
+      ingredients: meal.extendedIngredients
+        ? meal.extendedIngredients.map((ingredient) => ingredient.name)
+        : [],
+
+      vegetarian: meal.vegetarian || false,
+      vegan: meal.vegan || false,
+      gluten_free: meal.glutenFree || false,
+      dairy_free: meal.dairyFree || false,
+
+      ready_in_minutes: meal.readyInMinutes || 0,
+      servings: meal.servings || 0,
+
+      calories:
+        meal.nutrition?.nutrients?.find((n) => n.name === 'Calories')?.amount ||
+        0,
+
+      protein:
+        meal.nutrition?.nutrients?.find((n) => n.name === 'Protein')?.amount ||
+        0,
+
+      carbs:
+        meal.nutrition?.nutrients?.find((n) => n.name === 'Carbohydrates')
+          ?.amount || 0,
+
+      fat:
+        meal.nutrition?.nutrients?.find((n) => n.name === 'Fat')?.amount || 0,
+
+      created_at: null,
+    }));
+
+    const rankedMeals = await runRecommendation(req.user.id, formattedMeals);
+
+    res.status(200).json({
+      meals: rankedMeals,
+    });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: 'Failed to fetch meals' });
+
+    res.status(500).json({
+      message: err.message,
+      stack: err.stack,
+    });
   }
 });
 
