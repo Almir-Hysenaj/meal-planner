@@ -1,12 +1,12 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import pool from '../config/db.js';
 import { protect } from '../middleware/auth.js';
 
 const router = express.Router();
 
 // Get all saved meals
-router.get('/', protect, async (req, res) => {
-  const userId = req.user.id;
+router.get('/', protect, async (req: Request, res: Response) => {
+  const userId = req.user!.id;
 
   const savedMeals = await pool.query(
     `SELECT *
@@ -22,8 +22,8 @@ router.get('/', protect, async (req, res) => {
 });
 
 // Save a meal
-router.post('/', protect, async (req, res) => {
-  const userId = req.user.id;
+router.post('/', protect, async (req: Request, res: Response) => {
+  const userId = req.user!.id;
 
   const {
     meal_id,
@@ -46,9 +46,10 @@ router.post('/', protect, async (req, res) => {
   } = req.body;
 
   if (!meal_id || !title || !image) {
-    return res.status(400).json({
+    res.status(400).json({
       message: 'Please provide meal information',
     });
+    return;
   }
 
   const existingMeal = await pool.query(
@@ -60,9 +61,10 @@ router.post('/', protect, async (req, res) => {
   );
 
   if (existingMeal.rows.length > 0) {
-    return res.status(400).json({
+    res.status(400).json({
       message: 'Meal already saved',
     });
+    return;
   }
 
   const newMeal = await pool.query(
@@ -125,8 +127,8 @@ router.post('/', protect, async (req, res) => {
 });
 
 // Delete saved meal
-router.delete('/:mealId', protect, async (req, res) => {
-  const userId = req.user.id;
+router.delete('/:mealId', protect, async (req: Request, res: Response) => {
+  const userId = req.user!.id;
   const { mealId } = req.params;
 
   const deletedMeal = await pool.query(
@@ -138,9 +140,10 @@ router.delete('/:mealId', protect, async (req, res) => {
   );
 
   if (deletedMeal.rows.length === 0) {
-    return res.status(404).json({
+    res.status(404).json({
       message: 'Saved meal not found',
     });
+    return;
   }
 
   res.status(200).json({

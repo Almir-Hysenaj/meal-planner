@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import pool from '../config/db.js';
 import { protect } from '../middleware/auth.js';
 import calorieCalculator from '../utils/calorieCalculator.js';
@@ -6,8 +6,8 @@ import calorieCalculator from '../utils/calorieCalculator.js';
 const router = express.Router();
 
 // Check if user has profile created
-router.get('/', protect, async (req, res) => {
-  const userId = req.user.id;
+router.get('/', protect, async (req: Request, res: Response) => {
+  const userId = req.user!.id;
 
   const profile = await pool.query(
     'SELECT * FROM profiles WHERE user_id = $1',
@@ -15,10 +15,11 @@ router.get('/', protect, async (req, res) => {
   );
 
   if (profile.rows.length === 0) {
-    return res.status(200).json({
+    res.status(200).json({
       profile: null,
       profileComplete: false,
     });
+    return;
   }
 
   const userProfile = profile.rows[0];
@@ -32,8 +33,8 @@ router.get('/', protect, async (req, res) => {
 });
 
 // Create user profile
-router.post('/', protect, async (req, res) => {
-  const userId = req.user.id;
+router.post('/', protect, async (req: Request, res: Response) => {
+  const userId = req.user!.id;
 
   const { age, sex, height_cm, weight_kg, activity_level, goal, goal_rate } =
     req.body;
@@ -48,7 +49,8 @@ router.post('/', protect, async (req, res) => {
     !goal ||
     goal_rate == undefined
   ) {
-    return res.status(400).json({ message: 'Please enter all fields' });
+    res.status(400).json({ message: 'Please enter all fields' });
+    return;
   }
 
   // Check if profile already exists
@@ -58,7 +60,8 @@ router.post('/', protect, async (req, res) => {
   );
 
   if (existingProfile.rows.length > 0) {
-    return res.status(400).json({ message: 'Profile already exists' });
+    res.status(400).json({ message: 'Profile already exists' });
+    return;
   }
 
   // Create new profile
@@ -76,8 +79,8 @@ router.post('/', protect, async (req, res) => {
 });
 
 // Update user profile
-router.put('/', protect, async (req, res) => {
-  const userId = req.user.id;
+router.put('/', protect, async (req: Request, res: Response) => {
+  const userId = req.user!.id;
 
   const { age, sex, height_cm, weight_kg, activity_level, goal, goal_rate } =
     req.body;
@@ -92,7 +95,8 @@ router.put('/', protect, async (req, res) => {
     !goal ||
     goal_rate == undefined
   ) {
-    return res.status(400).json({ message: 'Please enter all fields' });
+    res.status(400).json({ message: 'Please enter all fields' });
+    return;
   }
 
   const updatedProfile = await pool.query(
@@ -104,7 +108,8 @@ router.put('/', protect, async (req, res) => {
   );
 
   if (updatedProfile.rows.length === 0) {
-    return res.status(404).json({ message: 'Profile not found' });
+    res.status(404).json({ message: 'Profile not found' });
+    return;
   }
 
   res.status(200).json({

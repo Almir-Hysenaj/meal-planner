@@ -1,15 +1,26 @@
-const calorieCalculator = (profile) => {
+interface Profile {
+  age: number;
+  sex: string;
+  height_cm: number;
+  weight_kg: number;
+  activity_level: keyof typeof activityMultipliers;
+  goal: string;
+  goal_rate: number;
+}
+
+const activityMultipliers = {
+  not_active: 1.2,
+  lightly_active: 1.375,
+  active: 1.55,
+  very_active: 1.725,
+};
+
+const calorieCalculator = (profile: Profile) => {
   const { age, sex, height_cm, weight_kg, activity_level, goal, goal_rate } =
     profile;
-  let cal,
-    calGoal = 0;
 
-  const activityMultipliers = {
-    not_active: 1.2,
-    lightly_active: 1.375,
-    active: 1.55,
-    very_active: 1.725,
-  };
+  let cal = 0;
+  let calGoal = 0;
 
   if (sex === 'male') {
     cal =

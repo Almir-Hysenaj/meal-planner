@@ -1,33 +1,33 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { CookieOptions } from 'express';
 import pool from '../config/db.js';
 import { protect } from '../middleware/auth.js';
 
 const router = express.Router();
 
-const cookieOptions = {
+const cookieOptions: CookieOptions = {
   httpOnly: true,
   secure: process.env.NODE_ENV === 'production',
   sameSite: 'strict',
   maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
 };
 
-const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
+const generateToken = (id: number): string => {
+  return jwt.sign({ id }, process.env.JWT_SECRET!, {
     expiresIn: '30d',
   });
 };
 
 // Register
 
-router.post('/register', async (req, res) => {
+router.post('/register', async (req: Request, res: Response) => {
   const { first_name, last_name, email, password } = req.body;
 
   if (!first_name || !last_name || !email || !password) {
-    return res
-      .status(400)
-      .json({ message: 'Please provide all required fields' });
+    res.status(400).json({ message: 'Please provide all required fields' });
+    return;
   }
 
   const userExists = await pool.query('SELECT * FROM users WHERE email = $1', [
@@ -35,7 +35,8 @@ router.post('/register', async (req, res) => {
   ]);
 
   if (userExists.rows.length > 0) {
-    return res.status(400).json({ message: 'User already exists' });
+    res.status(400).json({ message: 'User already exists' });
+    return;
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -49,16 +50,15 @@ router.post('/register', async (req, res) => {
 
   res.cookie('token', token, cookieOptions);
 
-  return res.status(201).json({ user: newUser.rows[0] });
+  res.status(201).json({ user: newUser.rows[0] });
 });
 
 // Login
-router.post('/login', async (req, res) => {
+router.post('/login', async (req: Request, res: Response) => {
   const { email, password } = req.body;
   if (!email || !password) {
-    return res
-      .status(400)
-      .json({ message: 'Please provide all required fields' });
+    res.status(400).json({ message: 'Please provide all required fields' });
+    return;
   }
 
   const user = await pool.query('SELECT * FROM users WHERE email = $1', [
@@ -66,7 +66,8 @@ router.post('/login', async (req, res) => {
   ]);
 
   if (user.rows.length === 0) {
-    return res.status(400).json({ message: 'Invalid credentials' });
+    res.status(400).json({ message: 'Invalid credentials' });
+    return;
   }
 
   const userData = user.rows[0];
@@ -74,7 +75,8 @@ router.post('/login', async (req, res) => {
   const isMatch = await bcrypt.compare(password, userData.password);
 
   if (!isMatch) {
-    return res.status(400).json({ message: 'Invalid credentials' });
+    res.status(400).json({ message: 'Invalid credentials' });
+    return;
   }
 
   const token = generateToken(userData.id);
@@ -92,13 +94,13 @@ router.post('/login', async (req, res) => {
 });
 
 // Me
-router.get('/me', protect, async (req, res) => {
+router.get('/me', protect, (req: Request, res: Response) => {
   res.json(req.user);
   // return info of the logged in user from protect middleware
 });
 
 // Logout
-router.post('/logout', (req, res) => {
+router.post('/logout', (req: Request, res: Response) => {
   res.cookie('token', '', { ...cookieOptions, maxAge: 1 });
   res.json({ message: 'Logged out successfully' });
 });
