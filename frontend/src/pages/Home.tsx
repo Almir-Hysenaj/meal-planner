@@ -179,50 +179,107 @@ const Home = ({ user, error, setUser }: HomeProps) => {
   return (
     <>
       <Navbar user={user} setUser={setUser} />
-      <div className="min-h-[80vh] flex items-center justify-center p-4">
-        <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-lg text-center">
-          {error && <p className="text-red-500">{error}</p>}
-          <div>
-            <h2 className="text-2xl font-bold mb-4 text-gray-800">
-              Welcome, {user.first_name} {user.last_name}!
-            </h2>
+      <div className="min-h-screen bg-gray-50 pt-25">
+        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+          {error && (
+            <div className="mb-6 rounded-lg bg-red-100 px-4 py-3 text-red-700">
+              {error}
+            </div>
+          )}
 
-            {!profileComplete ? (
-              <div>
-                <p>Complete your profile to receive recommendations.</p>
-                <button
-                  onClick={() => navigate('/profile')}
-                  className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                >
-                  Complete Profile
-                </button>
-              </div>
-            ) : (
-              <div>
-                <h2>Maintenance Kcals: {calories?.maintenanceCalories}</h2>
-                <h2>Target Kcals: {calories?.targetCalories}</h2>
-                <MealFilters
-                  filters={filters}
-                  setFilters={setFilters}
-                  onApply={handleApplyFilters}
-                  onClear={handleClearFilters}
-                />
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-                  {meals.map((meal) => (
-                    <MealCard
-                      key={meal.id}
-                      id={meal.id}
-                      title={meal.title}
-                      image={meal.image}
-                      onClick={handleMealClick}
-                    />
-                  ))}
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900">
+              Welcome, {user.first_name} {user.last_name}!
+            </h1>
+
+            <p className="mt-2 text-gray-600">
+              Find personalised meal recommendations based on your profile and
+              saved meals.
+            </p>
+          </div>
+
+          {!profileComplete ? (
+            <div className="rounded-xl bg-white border border-gray-200 shadow-sm p-6">
+              <p className="text-gray-700">
+                Complete your profile to receive recommendations.
+              </p>
+
+              <button
+                onClick={() => navigate('/profile')}
+                className="mt-4 rounded-lg bg-emerald-600 px-4 py-2 text-white hover:bg-emerald-700"
+              >
+                Complete Profile
+              </button>
+            </div>
+          ) : (
+            <>
+              {/* Calories */}
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 mb-8">
+                <div className="rounded-xl bg-white border border-gray-200 shadow-sm p-6">
+                  <p className="text-sm text-gray-500">Maintenance Calories</p>
+
+                  <h2 className="mt-2 text-3xl font-bold text-gray-900">
+                    {calories?.maintenanceCalories}
+                  </h2>
+
+                  <p className="text-sm text-gray-500">kcal/day</p>
+                </div>
+
+                <div className="rounded-xl bg-white border border-gray-200 shadow-sm p-6">
+                  <p className="text-sm text-gray-500">Target Calories</p>
+
+                  <h2 className="mt-2 text-3xl font-bold text-emerald-600">
+                    {calories?.targetCalories}
+                  </h2>
+
+                  <p className="text-sm text-gray-500">kcal/day</p>
                 </div>
               </div>
-            )}
-          </div>
+
+              {/* Filters + Meals */}
+              <div className="grid grid-cols-1 gap-8 lg:grid-cols-[280px_1fr]">
+                <div className="rounded-xl bg-white border border-gray-200 shadow-sm p-6">
+                  <h2 className="mb-6 text-lg font-semibold text-gray-900">
+                    Filters
+                  </h2>
+
+                  <MealFilters
+                    filters={filters}
+                    setFilters={setFilters}
+                    onApply={handleApplyFilters}
+                    onClear={handleClearFilters}
+                  />
+                </div>
+
+                <div>
+                  <div className="mb-6 flex items-center justify-between">
+                    <h2 className="text-2xl font-semibold text-gray-900">
+                      Recommended Meals
+                    </h2>
+
+                    <p className="text-sm text-gray-500">
+                      {meals.length} meals
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+                    {meals.map((meal) => (
+                      <MealCard
+                        key={meal.id}
+                        id={meal.id}
+                        title={meal.title}
+                        image={meal.image}
+                        onClick={handleMealClick}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
+
       {selectedMeal && (
         <MealDetailsModal
           meal={selectedMeal}

@@ -14,138 +14,278 @@ const MealDetailsModal = ({
   onUnsave,
 }: MealDetailModalProps) => {
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 max-w-3xl w-full mx-4 relative max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+      <div
+        className="
+      relative
+      max-h-[90vh]
+      w-full
+      max-w-4xl
+      overflow-y-auto
+      rounded-3xl
+      bg-white
+      shadow-2xl
+    "
+      >
+        {/* Close */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-2xl font-bold"
+          className="
+          absolute
+          right-5
+          top-5
+          z-10
+          flex
+          h-10
+          w-10
+          items-center
+          justify-center
+          rounded-full
+          bg-white/90
+          text-gray-600
+          shadow
+          hover:bg-white
+          cursor-pointer
+        "
         >
-          ×
+          ✕
         </button>
 
-        <h2 className="text-2xl font-bold mb-4">{meal.title}</h2>
+        {/* Image */}
+        <div className="relative">
+          <img
+            src={meal.image}
+            alt={meal.title}
+            className="
+            h-80
+            w-full
+            object-cover
+          "
+          />
 
-        <img
-          src={meal.image}
-          alt={meal.title}
-          className="w-full h-64 object-cover rounded-lg mb-6"
-        />
+          <div
+            className="
+          absolute
+          bottom-0
+          left-0
+          right-0
+          bg-linear-to-t
+          from-black/90
+          to-transparent
+          p-8
+        "
+          >
+            <h2
+              className="
+            max-w-3xl
+            text-3xl
+            font-bold
+            text-white
+          "
+            >
+              {meal.title}
+            </h2>
+          </div>
+        </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-gray-100 p-3 rounded">
-            <p className="text-sm text-gray-500">Calories</p>
-            <p className="font-bold">
+        <div className="p-8">
+          {/* Nutrition cards */}
+          <div
+            className="
+          mb-8
+          grid
+          grid-cols-2
+          gap-4
+          md:grid-cols-4
+        "
+          >
+            {[
               {
-                meal.nutrition?.nutrients?.find(
+                label: 'Calories',
+                value: meal.nutrition?.nutrients?.find(
                   (n: any) => n.name === 'Calories',
-                )?.amount
-              }
-              kcal
-            </p>
-          </div>
-
-          <div className="bg-gray-100 p-3 rounded">
-            <p className="text-sm text-gray-500">Protein</p>
-            <p className="font-bold">
+                )?.amount,
+                unit: 'kcal',
+              },
               {
-                meal.nutrition?.nutrients?.find(
+                label: 'Protein',
+                value: meal.nutrition?.nutrients?.find(
                   (n: any) => n.name === 'Protein',
-                )?.amount
-              }
-              g
-            </p>
-          </div>
-
-          <div className="bg-gray-100 p-3 rounded">
-            <p className="text-sm text-gray-500">Carbs</p>
-            <p className="font-bold">
+                )?.amount,
+                unit: 'g',
+              },
               {
-                meal.nutrition?.nutrients?.find(
+                label: 'Carbs',
+                value: meal.nutrition?.nutrients?.find(
                   (n: any) => n.name === 'Carbohydrates',
-                )?.amount
-              }
-              g
-            </p>
-          </div>
-
-          <div className="bg-gray-100 p-3 rounded">
-            <p className="text-sm text-gray-500">Fat</p>
-            <p className="font-bold">
+                )?.amount,
+                unit: 'g',
+              },
               {
-                meal.nutrition?.nutrients?.find((n: any) => n.name === 'Fat')
-                  ?.amount
+                label: 'Fat',
+                value: meal.nutrition?.nutrients?.find(
+                  (n: any) => n.name === 'Fat',
+                )?.amount,
+                unit: 'g',
+              },
+            ].map((item) => (
+              <div
+                key={item.label}
+                className="
+                rounded-2xl
+                bg-emerald-50
+                p-4
+              "
+              >
+                <p className="text-sm text-gray-500">{item.label}</p>
+
+                <p
+                  className="
+                mt-1
+                text-2xl
+                font-bold
+                text-emerald-700
+              "
+                >
+                  {Math.round(item.value ?? 0)}
+                  {item.unit}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {/* Tags */}
+          <div className="mb-8 flex flex-wrap gap-2">
+            {[
+              meal.glutenFree && 'Gluten Free',
+              meal.dairyFree && 'Dairy Free',
+              meal.vegan && 'Vegan',
+              meal.vegetarian && 'Vegetarian',
+            ]
+              .filter(Boolean)
+              .map((tag) => (
+                <span
+                  key={tag as string}
+                  className="
+                  rounded-full
+                  bg-emerald-100
+                  px-4
+                  py-1.5
+                  text-sm
+                  font-medium
+                  text-emerald-700
+                "
+                >
+                  {tag}
+                </span>
+              ))}
+          </div>
+
+          {/* Recipe info */}
+          <div
+            className="
+          mb-8
+          grid
+          grid-cols-1
+          gap-4
+          md:grid-cols-3
+        "
+          >
+            <div className="rounded-xl bg-gray-50 p-4">
+              <p className="text-sm text-gray-500">Cooking Time</p>
+              <p className="font-semibold">{meal.readyInMinutes} mins</p>
+            </div>
+
+            <div className="rounded-xl bg-gray-50 p-4">
+              <p className="text-sm text-gray-500">Servings</p>
+              <p className="font-semibold">{meal.servings}</p>
+            </div>
+
+            <div className="rounded-xl bg-gray-50 p-4">
+              <p className="text-sm text-gray-500">Price</p>
+              <p className="font-semibold">
+                £{(meal.pricePerServing / 100).toFixed(2)}
+              </p>
+            </div>
+          </div>
+
+          {/* Ingredients */}
+          <h3
+            className="
+          mb-4
+          text-2xl
+          font-bold
+        "
+          >
+            Ingredients
+          </h3>
+
+          <div
+            className="
+          mb-8
+          grid
+          grid-cols-1
+          gap-2
+          md:grid-cols-2
+        "
+          >
+            {meal.extendedIngredients?.map((ingredient: any) => (
+              <div
+                key={ingredient.id}
+                className="
+                rounded-lg
+                bg-gray-50
+                px-4
+                py-3
+                text-gray-700
+              "
+              >
+                {ingredient.original}
+              </div>
+            ))}
+          </div>
+
+          {/* Buttons */}
+          <div className="flex flex-wrap gap-3">
+            <a
+              href={meal.sourceUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="
+              rounded-xl
+              bg-emerald-600
+              px-6
+              py-3
+              font-medium
+              text-white
+              transition
+              hover:bg-emerald-700
+            "
+            >
+              View Recipe
+            </a>
+
+            <button
+              onClick={isSaved ? onUnsave : onSave}
+              className={`
+              rounded-xl
+              px-6
+              py-3
+              font-medium
+              text-white
+              transition
+              cursor-pointer
+              ${
+                isSaved
+                  ? 'bg-red-500 hover:bg-red-600'
+                  : 'bg-teal-600 hover:bg-teal-700'
               }
-              g
-            </p>
+            `}
+            >
+              {isSaved ? 'Remove Saved' : 'Save Meal'}
+            </button>
           </div>
         </div>
-
-        <div className="flex flex-wrap gap-2 mb-6">
-          {meal.glutenFree && (
-            <span className="bg-green-100 px-3 py-1 rounded">Gluten Free</span>
-          )}
-
-          {meal.dairyFree && (
-            <span className="bg-green-100 px-3 py-1 rounded">Dairy Free</span>
-          )}
-
-          {meal.vegan && (
-            <span className="bg-green-100 px-3 py-1 rounded">Vegan</span>
-          )}
-
-          {meal.vegetarian && (
-            <span className="bg-green-100 px-3 py-1 rounded">Vegetarian</span>
-          )}
-        </div>
-
-        <div className="mb-6">
-          <p>
-            <strong>Ready in:</strong> {meal.readyInMinutes} mins
-          </p>
-
-          <p>
-            <strong>Servings:</strong> {meal.servings}
-          </p>
-
-          <p>
-            <strong>Price per serving:</strong> £
-            {(meal.pricePerServing / 100).toFixed(2)}
-          </p>
-        </div>
-
-        <h3 className="text-xl font-bold mb-3">Ingredients</h3>
-
-        <ul className="list-disc pl-5 space-y-1 mb-6">
-          {meal.extendedIngredients?.map((ingredient: any) => (
-            <li key={ingredient.id}>{ingredient.original}</li>
-          ))}
-        </ul>
-
-        <a
-          href={meal.sourceUrl}
-          target="_blank"
-          rel="noreferrer"
-          className="cursor-pointer inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          View Full Recipe
-        </a>
-
-        {/* Save button */}
-        {isSaved ? (
-          <button
-            onClick={onUnsave}
-            className="cursor-pointer ml-3 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-          >
-            Remove from Saved
-          </button>
-        ) : (
-          <button
-            onClick={onSave}
-            className="cursor-pointer ml-3 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-          >
-            Save Meal
-          </button>
-        )}
       </div>
     </div>
   );
