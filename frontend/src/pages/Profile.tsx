@@ -89,118 +89,241 @@ const Profile = ({ user, setUser }: ProfileProps) => {
   return (
     <>
       <Navbar user={user} setUser={setUser} />
-      <div className="min-h-[80vh] flex items-center justify-center p-4">
-        {/* Profile form */}
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white p-8 rounded-lg shadow-md w-full max-w-lg"
-        >
-          <h2 className="text-2xl font-bold mb-6 text-gray-800 text-center">
-            {profileExists ? 'Update Profile' : 'Create Profile'}
-          </h2>
 
-          {/* Age */}
-          <input
-            type="number"
-            placeholder="Age"
-            value={formData.age}
-            onChange={(e) => setFormData({ ...formData, age: e.target.value })}
-            className="w-full mb-4 p-2 border rounded"
-          />
+      <div className="min-h-screen bg-gray-50 px-4 py-10 sm:px-6 lg:px-8 pt-25">
+        <div className="mx-auto max-w-2xl">
+          {/* Header */}
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900">
+              {profileExists ? 'Update Profile' : 'Create Profile'}
+            </h1>
 
-          {/* Sex */}
-          <select
-            value={formData.sex}
-            onChange={(e) => setFormData({ ...formData, sex: e.target.value })}
-            className="w-full mb-4 p-2 border rounded"
+            <p className="mt-2 text-gray-500">
+              Tell us about yourself so we can personalise your meal
+              recommendations.
+            </p>
+          </div>
+
+          {/* Profile form */}
+          <form
+            onSubmit={handleSubmit}
+            className="rounded-2xl bg-white p-6 shadow-sm sm:p-8"
           >
-            <option value="">Select sex</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-          </select>
+            {/* Basic information */}
+            <div className="mb-8">
+              <h2 className="mb-1 text-lg font-semibold text-gray-900">
+                About You
+              </h2>
 
-          {/* Height */}
-          <input
-            type="number"
-            placeholder="Height in cm"
-            value={formData.height_cm}
-            onChange={(e) =>
-              setFormData({ ...formData, height_cm: e.target.value })
-            }
-            className="w-full mb-4 p-2 border rounded"
-          />
+              <p className="mb-5 text-sm text-gray-500">
+                Enter your basic information.
+              </p>
 
-          {/* Weight */}
-          <input
-            type="number"
-            placeholder="Weight in kg"
-            value={formData.weight_kg}
-            onChange={(e) =>
-              setFormData({ ...formData, weight_kg: e.target.value })
-            }
-            className="w-full mb-4 p-2 border rounded"
-          />
+              <div className="grid gap-5 sm:grid-cols-2">
+                {/* Age */}
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-700">
+                    Age
+                  </label>
 
-          {/* Activity level */}
-          <select
-            value={formData.activity_level}
-            onChange={(e) =>
-              setFormData({ ...formData, activity_level: e.target.value })
-            }
-            className="w-full mb-4 p-2 border rounded"
-          >
-            <option value="">Select activity level</option>
-            <option value="not_active">Not Very Active</option>
-            <option value="lightly_active">Lightly Active</option>
-            <option value="active">Active</option>
-            <option value="very_active">Very Active</option>
-          </select>
+                  <input
+                    type="number"
+                    placeholder="e.g. 20"
+                    value={formData.age}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        age: e.target.value,
+                      })
+                    }
+                    className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-800 outline-none transition focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-100"
+                  />
+                </div>
 
-          {/* Goal */}
-          <select
-            value={formData.goal}
-            // If goal is to maintain, goal_rate will be 0
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                goal: e.target.value,
-                goal_rate:
-                  e.target.value === 'maintain' ? '0' : formData.goal_rate,
-              })
-            }
-            className="w-full mb-4 p-2 border rounded"
-          >
-            <option value="">Select goal</option>
-            <option value="maintain">Maintain weight</option>
-            <option value="lose">Lose weight</option>
-            <option value="gain">Gain weight</option>
-          </select>
+                {/* Sex */}
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-700">
+                    Sex
+                  </label>
 
-          {/* Will only show if goal is to lose/gain weight */}
-          {formData.goal === 'maintain' || formData.goal === '' ? (
-            ''
-          ) : (
-            <select
-              value={formData.goal_rate}
-              onChange={(e) =>
-                setFormData({ ...formData, goal_rate: e.target.value })
-              }
-              className="w-full mb-6 p-2 border rounded"
+                  <select
+                    value={formData.sex}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        sex: e.target.value,
+                      })
+                    }
+                    className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-800 outline-none transition focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-100"
+                  >
+                    <option value="">Select sex</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                  </select>
+                </div>
+
+                {/* Height */}
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-700">
+                    Height
+                  </label>
+
+                  <div className="relative">
+                    <input
+                      type="number"
+                      placeholder="e.g. 175"
+                      value={formData.height_cm}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          height_cm: e.target.value,
+                        })
+                      }
+                      className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 pr-12 text-sm text-gray-800 outline-none transition focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-100"
+                    />
+
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">
+                      cm
+                    </span>
+                  </div>
+                </div>
+
+                {/* Weight */}
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-700">
+                    Weight
+                  </label>
+
+                  <div className="relative">
+                    <input
+                      type="number"
+                      placeholder="e.g. 70"
+                      value={formData.weight_kg}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          weight_kg: e.target.value,
+                        })
+                      }
+                      className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 pr-12 text-sm text-gray-800 outline-none transition focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-100"
+                    />
+
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">
+                      kg
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Lifestyle */}
+            <div className="mb-8 border-t border-gray-100 pt-8">
+              <h2 className="mb-1 text-lg font-semibold text-gray-900">
+                Lifestyle & Goals
+              </h2>
+
+              <p className="mb-5 text-sm text-gray-500">
+                This information helps calculate your calorie targets.
+              </p>
+
+              {/* Activity level */}
+              <div className="mb-5">
+                <label className="mb-2 block text-sm font-medium text-gray-700">
+                  Activity level
+                </label>
+
+                <select
+                  value={formData.activity_level}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      activity_level: e.target.value,
+                    })
+                  }
+                  className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-800 outline-none transition focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-100"
+                >
+                  <option value="">Select activity level</option>
+                  <option value="not_active">Not Very Active</option>
+                  <option value="lightly_active">Lightly Active</option>
+                  <option value="active">Active</option>
+                  <option value="very_active">Very Active</option>
+                </select>
+              </div>
+
+              {/* Goal */}
+              <div className="mb-5">
+                <label className="mb-2 block text-sm font-medium text-gray-700">
+                  Goal
+                </label>
+
+                <select
+                  value={formData.goal}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      goal: e.target.value,
+                      goal_rate:
+                        e.target.value === 'maintain'
+                          ? '0'
+                          : formData.goal_rate,
+                    })
+                  }
+                  className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-800 outline-none transition focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-100"
+                >
+                  <option value="">Select goal</option>
+                  <option value="maintain">Maintain weight</option>
+                  <option value="lose">Lose weight</option>
+                  <option value="gain">Gain weight</option>
+                </select>
+              </div>
+
+              {/* Goal rate */}
+              {formData.goal !== 'maintain' && formData.goal !== '' && (
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-700">
+                    Weekly goal
+                  </label>
+
+                  <select
+                    value={formData.goal_rate}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        goal_rate: e.target.value,
+                      })
+                    }
+                    className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-800 outline-none transition focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-100"
+                  >
+                    <option value="">Select goal rate</option>
+                    <option value="0.25">0.25 kg/week</option>
+                    <option value="0.5">0.5 kg/week</option>
+                    <option value="1">1 kg/week</option>
+                  </select>
+                </div>
+              )}
+            </div>
+
+            {/* Submit */}
+            <button
+              type="submit"
+              className="
+              w-full
+              rounded-lg
+              bg-emerald-600
+              px-4
+              py-3
+              font-medium
+              text-white
+              transition
+              hover:bg-emerald-700
+              active:scale-[0.99]
+              cursor-pointer
+            "
             >
-              <option value="">Select goal rate</option>
-              <option value="0.25">0.25kg/week</option>
-              <option value="0.5">0.5kg/week</option>
-              <option value="1">1kg/week</option>
-            </select>
-          )}
-
-          <button
-            type="submit"
-            className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 cursor-pointer"
-          >
-            {profileExists ? 'Update Profile' : 'Create Profile'}
-          </button>
-        </form>
+              {profileExists ? 'Update Profile' : 'Create Profile'}
+            </button>
+          </form>
+        </div>
       </div>
     </>
   );

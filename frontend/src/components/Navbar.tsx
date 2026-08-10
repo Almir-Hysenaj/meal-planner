@@ -58,6 +58,7 @@ const Navbar = ({ user, setUser }: NavbarProps) => {
                   text-emerald-700
                   hover:bg-gray-100
                   transition
+                  cursor-pointer
                 "
               >
                 Logout

@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import type { User } from '../App';
-import Navbar from '../components/Navbar';
 import MealCard from '../components/MealCard';
 import MealDetailsModal from '../components/MealDetailsModal';
 import MealFilters from '../components/MealFilters';
+import LoadingSpinner from '../components/LoadingSpinner';
 import { getProfile } from '../services/profile';
 import { getMeals, getMealDetails } from '../services/meals';
 import {
@@ -25,17 +25,22 @@ interface Meal {
   image: string;
 }
 
-const Home = ({ user, error, setUser }: HomeProps) => {
+const Home = ({ user, error }: HomeProps) => {
   const navigate = useNavigate();
 
   // States
   const [profileComplete, setProfileComplete] = useState<boolean | null>(null);
+
   const [calories, setCalories] = useState<{
     maintenanceCalories: number;
     targetCalories: number;
   } | null>(null);
+
+  const [loadingMeals, setLoadingMeals] = useState(false);
+
   const [meals, setMeals] = useState<Meal[]>([]);
   const [selectedMeal, setSelectedMeal] = useState<any | null>(null);
+
   const [filters, setFilters] = useState({
     sort: 'popularity',
     diet: '',
@@ -43,12 +48,14 @@ const Home = ({ user, error, setUser }: HomeProps) => {
     minCalories: undefined,
     maxCalories: undefined,
   });
+
   const [savedMeals, setSavedMeals] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const data = await getProfile();
+
         setProfileComplete(data.profileComplete);
 
         if (data.profileComplete) {
@@ -57,11 +64,16 @@ const Home = ({ user, error, setUser }: HomeProps) => {
           const savedMealsData = await getSavedMeals();
           setSavedMeals(savedMealsData.meals);
 
+          setLoadingMeals(true);
+
           const mealsData = await getMeals({ sort: filters.sort });
           setMeals(mealsData.meals);
+
+          setLoadingMeals(false);
         }
       } catch (err) {
         console.error('Error fetching profile:', err);
+        setLoadingMeals(false);
       }
     };
 
@@ -140,11 +152,15 @@ const Home = ({ user, error, setUser }: HomeProps) => {
   };
 
   const handleApplyFilters = async () => {
+    setLoadingMeals(true);
+
     try {
       const mealsData = await getMeals(filters);
       setMeals(mealsData.meals);
     } catch (err) {
       console.error('Error applying filters: ', err);
+    } finally {
+      setLoadingMeals(false);
     }
   };
 
@@ -158,33 +174,35 @@ const Home = ({ user, error, setUser }: HomeProps) => {
     };
 
     setFilters(defaultFilters);
+    setLoadingMeals(true);
 
     try {
       const mealsData = await getMeals(defaultFilters);
       setMeals(mealsData.meals);
     } catch (err) {
       console.error('Error clearing filters:', err);
+    } finally {
+      setLoadingMeals(false);
     }
   };
 
   // If the user is not logged in, redirect to the login page
-  if (!user) return <Navigate to="/login" />;
+  if (!user) return null;
 
   if (profileComplete === null) {
-    return <p>Loading...</p>;
+    return null;
   }
 
   const isSaved = savedMeals.some((meal) => meal.meal_id === selectedMeal?.id);
 
   return (
     <>
-      <Navbar user={user} setUser={setUser} />
-      <div className="min-h-screen bg-gray-50 pt-25">
-        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-gray-50 pt-24">
+        <div className="mx-auto max-w-7xl px-6 py-8">
           {error && (
-            <div className="mb-6 rounded-lg bg-red-100 px-4 py-3 text-red-700">
+            <p className="mb-6 rounded-lg bg-red-50 p-3 text-red-600">
               {error}
-            </div>
+            </p>
           )}
 
           <div className="mb-8">
@@ -199,7 +217,7 @@ const Home = ({ user, error, setUser }: HomeProps) => {
           </div>
 
           {!profileComplete ? (
-            <div className="rounded-xl bg-white border border-gray-200 shadow-sm p-6">
+            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
               <p className="text-gray-700">
                 Complete your profile to receive recommendations.
               </p>
@@ -214,8 +232,8 @@ const Home = ({ user, error, setUser }: HomeProps) => {
           ) : (
             <>
               {/* Calories */}
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 mb-8">
-                <div className="rounded-xl bg-white border border-gray-200 shadow-sm p-6">
+              <div className="mb-8 grid grid-cols-1 gap-6 sm:grid-cols-2">
+                <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
                   <p className="text-sm text-gray-500">Maintenance Calories</p>
 
                   <h2 className="mt-2 text-3xl font-bold text-gray-900">
@@ -225,7 +243,7 @@ const Home = ({ user, error, setUser }: HomeProps) => {
                   <p className="text-sm text-gray-500">kcal/day</p>
                 </div>
 
-                <div className="rounded-xl bg-white border border-gray-200 shadow-sm p-6">
+                <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
                   <p className="text-sm text-gray-500">Target Calories</p>
 
                   <h2 className="mt-2 text-3xl font-bold text-emerald-600">
@@ -238,7 +256,7 @@ const Home = ({ user, error, setUser }: HomeProps) => {
 
               {/* Filters + Meals */}
               <div className="grid grid-cols-1 gap-8 lg:grid-cols-[280px_1fr]">
-                <div className="rounded-xl bg-white border border-gray-200 shadow-sm p-6">
+                <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
                   <h2 className="mb-6 text-lg font-semibold text-gray-900">
                     Filters
                   </h2>
@@ -262,17 +280,23 @@ const Home = ({ user, error, setUser }: HomeProps) => {
                     </p>
                   </div>
 
-                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-                    {meals.map((meal) => (
-                      <MealCard
-                        key={meal.id}
-                        id={meal.id}
-                        title={meal.title}
-                        image={meal.image}
-                        onClick={handleMealClick}
-                      />
-                    ))}
-                  </div>
+                  {loadingMeals ? (
+                    <div className="flex min-h-64 items-center justify-center">
+                      <LoadingSpinner size="lg" />
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+                      {meals.map((meal) => (
+                        <MealCard
+                          key={meal.id}
+                          id={meal.id}
+                          title={meal.title}
+                          image={meal.image}
+                          onClick={handleMealClick}
+                        />
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </>
