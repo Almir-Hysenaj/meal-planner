@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { User } from '../App';
+import Navbar from '../components/Navbar';
 import MealCard from '../components/MealCard';
 import MealDetailsModal from '../components/MealDetailsModal';
 import MealFilters from '../components/MealFilters';
@@ -25,7 +26,7 @@ interface Meal {
   image: string;
 }
 
-const Home = ({ user, error }: HomeProps) => {
+const Home = ({ user, error, setUser }: HomeProps) => {
   const navigate = useNavigate();
 
   // States
@@ -190,13 +191,21 @@ const Home = ({ user, error }: HomeProps) => {
   if (!user) return null;
 
   if (profileComplete === null) {
-    return null;
+    return (
+      <>
+        <Navbar user={user} setUser={setUser} />
+        <div className="flex min-h-64 items-center justify-center">
+          <LoadingSpinner size="lg" />
+        </div>
+      </>
+    );
   }
 
   const isSaved = savedMeals.some((meal) => meal.meal_id === selectedMeal?.id);
 
   return (
     <>
+      <Navbar user={user} setUser={setUser} />
       <div className="min-h-screen bg-gray-50 pt-24">
         <div className="mx-auto max-w-7xl px-6 py-8">
           {error && (
