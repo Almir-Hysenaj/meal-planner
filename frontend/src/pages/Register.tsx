@@ -2,6 +2,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import type { User } from '../App';
+import MessageModal from '../components/MessageToast';
 
 interface RegisterProps {
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
@@ -18,7 +19,11 @@ const Register = ({ setUser }: RegisterProps) => {
     email: '',
     password: '',
   });
-  const [error, setError] = useState('');
+
+  const [messageModal, setMessageModal] = useState<{
+    type: 'success' | 'error';
+    message: string;
+  } | null>(null);
 
   const navigate = useNavigate();
 
@@ -30,7 +35,10 @@ const Register = ({ setUser }: RegisterProps) => {
       setUser(res.data.user);
       navigate('/');
     } catch {
-      setError('Registration failed');
+      setMessageModal({
+        type: 'error',
+        message: 'Registration failed',
+      });
     }
   };
 
@@ -154,13 +162,6 @@ const Register = ({ setUser }: RegisterProps) => {
               />
             </div>
 
-            {/* Error */}
-            {error && (
-              <p className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">
-                {error}
-              </p>
-            )}
-
             {/* Register button */}
             <button
               type="submit"
@@ -190,6 +191,14 @@ const Register = ({ setUser }: RegisterProps) => {
           </div>
         </div>
       </div>
+
+      {messageModal && (
+        <MessageModal
+          type={messageModal.type}
+          message={messageModal.message}
+          onClose={() => setMessageModal(null)}
+        />
+      )}
     </div>
   );
 };

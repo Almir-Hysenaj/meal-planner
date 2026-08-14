@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
+import MessageModal from '../components/MessageToast';
 import type { User } from '../App';
 import { getProfile, createProfile, updateProfile } from '../services/profile';
 
@@ -15,6 +16,10 @@ const Profile = ({ user, setUser }: ProfileProps) => {
   // States
   const [profileExists, setProfileExists] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [messageModal, setMessageModal] = useState<{
+    type: 'success' | 'error';
+    message: string;
+  } | null>(null);
   const [formData, setFormData] = useState({
     age: '',
     sex: '',
@@ -45,6 +50,10 @@ const Profile = ({ user, setUser }: ProfileProps) => {
         }
       } catch (err) {
         console.log('Error fetching profile', err);
+        setMessageModal({
+          type: 'error',
+          message: 'Failed to fetch profile. Please try again.',
+        });
       } finally {
         setLoading(false);
       }
@@ -80,9 +89,23 @@ const Profile = ({ user, setUser }: ProfileProps) => {
         await createProfile(profileData);
       }
 
-      navigate('/');
+      setMessageModal({
+        type: 'success',
+        message: profileExists
+          ? 'Profile updated successfully.'
+          : 'Profile created successfully.',
+      });
+
+      setTimeout(() => {
+        navigate('/');
+      }, 1000);
     } catch (err) {
       console.error('Error saving profile:', err);
+
+      setMessageModal({
+        type: 'error',
+        message: 'Failed to save profile. Please try again.',
+      });
     }
   };
 
@@ -325,6 +348,14 @@ const Profile = ({ user, setUser }: ProfileProps) => {
           </form>
         </div>
       </div>
+
+      {messageModal && (
+        <MessageModal
+          type={messageModal.type}
+          message={messageModal.message}
+          onClose={() => setMessageModal(null)}
+        />
+      )}
     </>
   );
 };

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import MealCard from '../components/MealCard';
 import MealDetailsModal from '../components/MealDetailsModal';
+import MessageModal from '../components/MessageToast';
 import { getSavedMeals, deleteSavedMeal } from '../services/savedMeals';
 import { getMealDetails } from '../services/meals';
 import type { User } from '../App';
@@ -20,6 +21,10 @@ interface Meal {
 const SavedMeals = ({ user, setUser }: SavedMealsProps) => {
   const [savedMeals, setSavedMeals] = useState<Meal[]>([]);
   const [selectedMeal, setSelectedMeal] = useState<any | null>(null);
+  const [messageModal, setMessageModal] = useState<{
+    type: 'success' | 'error';
+    message: string;
+  } | null>(null);
 
   useEffect(() => {
     const fetchSavedMeals = async () => {
@@ -28,6 +33,11 @@ const SavedMeals = ({ user, setUser }: SavedMealsProps) => {
         setSavedMeals(data.meals);
       } catch (err) {
         console.error(err);
+
+        setMessageModal({
+          type: 'error',
+          message: 'Failed to fetch saved meals. Please try again.',
+        });
       }
     };
 
@@ -40,6 +50,11 @@ const SavedMeals = ({ user, setUser }: SavedMealsProps) => {
       setSelectedMeal(mealDetails.meal);
     } catch (err) {
       console.error(err);
+
+      setMessageModal({
+        type: 'error',
+        message: 'Failed to fetch meal details. Please try again.',
+      });
     }
   };
 
@@ -54,8 +69,18 @@ const SavedMeals = ({ user, setUser }: SavedMealsProps) => {
       );
 
       setSelectedMeal(null);
+
+      setMessageModal({
+        type: 'success',
+        message: 'Meal removed from saved meals.',
+      });
     } catch (err) {
       console.error(err);
+
+      setMessageModal({
+        type: 'error',
+        message: 'Failed to remove meal. Please try again.',
+      });
     }
   };
 
@@ -129,6 +154,14 @@ const SavedMeals = ({ user, setUser }: SavedMealsProps) => {
           isSaved={true}
           onSave={() => {}}
           onUnsave={handleUnsaveMeal}
+        />
+      )}
+
+      {messageModal && (
+        <MessageModal
+          type={messageModal.type}
+          message={messageModal.message}
+          onClose={() => setMessageModal(null)}
         />
       )}
     </>

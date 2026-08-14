@@ -2,6 +2,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import type { User } from '../App';
+import MessageModal from '../components/MessageToast';
 
 interface LoginProps {
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
@@ -21,7 +22,11 @@ const Login = ({ setUser }: LoginProps) => {
     email: '',
     password: '',
   });
-  const [error, setError] = useState<string>('');
+
+  const [messageModal, setMessageModal] = useState<{
+    type: 'success' | 'error';
+    message: string;
+  } | null>(null);
 
   const navigate = useNavigate();
 
@@ -35,7 +40,10 @@ const Login = ({ setUser }: LoginProps) => {
       setUser(res.data.user);
       navigate('/');
     } catch {
-      setError('Invalid email or password');
+      setMessageModal({
+        type: 'error',
+        message: 'Invalid email or password',
+      });
     }
   };
 
@@ -106,13 +114,6 @@ const Login = ({ setUser }: LoginProps) => {
               />
             </div>
 
-            {/* Error */}
-            {error && (
-              <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">
-                {error}
-              </p>
-            )}
-
             {/* Login button */}
             <button
               type="submit"
@@ -142,6 +143,14 @@ const Login = ({ setUser }: LoginProps) => {
           </div>
         </div>
       </div>
+
+      {messageModal && (
+        <MessageModal
+          type={messageModal.type}
+          message={messageModal.message}
+          onClose={() => setMessageModal(null)}
+        />
+      )}
     </div>
   );
 };

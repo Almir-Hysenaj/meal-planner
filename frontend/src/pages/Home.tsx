@@ -6,6 +6,7 @@ import MealCard from '../components/MealCard';
 import MealDetailsModal from '../components/MealDetailsModal';
 import MealFilters from '../components/MealFilters';
 import LoadingSpinner from '../components/LoadingSpinner';
+import MessageModal from '../components/MessageToast';
 import { getProfile } from '../services/profile';
 import { getMeals, getMealDetails } from '../services/meals';
 import {
@@ -31,6 +32,11 @@ const Home = ({ user, error, setUser }: HomeProps) => {
 
   // States
   const [profileComplete, setProfileComplete] = useState<boolean | null>(null);
+
+  const [messageModal, setMessageModal] = useState<{
+    type: 'success' | 'error';
+    message: string;
+  } | null>(null);
 
   const [calories, setCalories] = useState<{
     maintenanceCalories: number;
@@ -75,6 +81,11 @@ const Home = ({ user, error, setUser }: HomeProps) => {
       } catch (err) {
         console.error('Error fetching profile:', err);
         setLoadingMeals(false);
+
+        setMessageModal({
+          type: 'error',
+          message: 'Failed to fetch profile. Please try again.',
+        });
       }
     };
 
@@ -89,6 +100,11 @@ const Home = ({ user, error, setUser }: HomeProps) => {
       setSelectedMeal(mealDetails.meal);
     } catch (err) {
       console.error('Error fetching meal details: ', err);
+
+      setMessageModal({
+        type: 'error',
+        message: 'Failed to fetch meal details. Please try again.',
+      });
     }
   };
 
@@ -133,8 +149,18 @@ const Home = ({ user, error, setUser }: HomeProps) => {
       await saveMeal(mealToSave);
 
       setSavedMeals((prev) => [...prev, mealToSave]);
+
+      setMessageModal({
+        type: 'success',
+        message: 'Meal saved successfully.',
+      });
     } catch (err) {
       console.error('Error saving meal:', err);
+
+      setMessageModal({
+        type: 'error',
+        message: 'Failed to save meal. Please try again.',
+      });
     }
   };
 
@@ -147,8 +173,18 @@ const Home = ({ user, error, setUser }: HomeProps) => {
       setSavedMeals((prev) =>
         prev.filter((meal) => meal.meal_id !== selectedMeal.id),
       );
+
+      setMessageModal({
+        type: 'success',
+        message: 'Meal removed from saved meals.',
+      });
     } catch (err) {
       console.error('Error removing meal:', err);
+
+      setMessageModal({
+        type: 'error',
+        message: 'Failed to remove meal. Please try again.',
+      });
     }
   };
 
@@ -160,6 +196,11 @@ const Home = ({ user, error, setUser }: HomeProps) => {
       setMeals(mealsData.meals);
     } catch (err) {
       console.error('Error applying filters: ', err);
+
+      setMessageModal({
+        type: 'error',
+        message: 'Failed to apply filters. Please try again.',
+      });
     } finally {
       setLoadingMeals(false);
     }
@@ -182,6 +223,11 @@ const Home = ({ user, error, setUser }: HomeProps) => {
       setMeals(mealsData.meals);
     } catch (err) {
       console.error('Error clearing filters:', err);
+
+      setMessageModal({
+        type: 'error',
+        message: 'Failed to clear filters. Please try again.',
+      });
     } finally {
       setLoadingMeals(false);
     }
@@ -320,6 +366,14 @@ const Home = ({ user, error, setUser }: HomeProps) => {
           isSaved={isSaved}
           onSave={handleSaveMeal}
           onUnsave={handleUnsaveMeal}
+        />
+      )}
+
+      {messageModal && (
+        <MessageModal
+          type={messageModal.type}
+          message={messageModal.message}
+          onClose={() => setMessageModal(null)}
         />
       )}
     </>
