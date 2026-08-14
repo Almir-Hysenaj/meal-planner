@@ -9,18 +9,7 @@ const MealCard = ({ id, title, image, onClick }: MealCardProps) => {
   return (
     <div
       onClick={() => onClick(id)}
-      className="
-        cursor-pointer
-        overflow-hidden
-        rounded-xl
-        bg-white
-        shadow-sm
-        border
-        border-gray-200
-        transition
-        hover:-translate-y-1
-        hover:shadow-lg
-      "
+      className="cursor-pointer overflow-hidden rounded-xl bg-white shadow-sm border border-gray-200 transition hover:-translate-y-1 hover:shadow-lg"
     >
       <img src={image} alt={title} className="h-48 w-full object-cover" />
 

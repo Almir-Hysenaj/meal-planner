@@ -1,6 +1,7 @@
-import pandas as pd
-import joblib
 from pathlib import Path
+
+import joblib
+import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -12,24 +13,15 @@ def load_data():
     Load processed dataset and preprocessing objects.
     """
 
-    dataset = pd.read_csv(
-        BASE_DIR / "processed_dataset.csv"
-    )
+    dataset = pd.read_csv(BASE_DIR / "processed_dataset.csv")
 
-    scaler = joblib.load(
-        MODEL_DIR / "scaler.pkl"
-    )
+    scaler = joblib.load(MODEL_DIR / "scaler.pkl")
 
-    vectorizers = joblib.load(
-        MODEL_DIR / "text_vectorizers.pkl"
-    )
+    vectorizers = joblib.load(MODEL_DIR / "text_vectorizers.pkl")
 
-    encoder = joblib.load(
-        MODEL_DIR / "category_encoder.pkl"
-    )
+    encoder = joblib.load(MODEL_DIR / "category_encoder.pkl")
 
     return dataset, scaler, vectorizers, encoder
-
 
 
 def preprocess_new_meals(meals, scaler, vectorizers):
@@ -38,13 +30,12 @@ def preprocess_new_meals(meals, scaler, vectorizers):
     """
 
     from preprocess import (
-        preprocess_lists,
-        drop_unused_columns,
         convert_booleans,
         create_text_features,
-        scale_numerical_features
+        drop_unused_columns,
+        preprocess_lists,
+        scale_numerical_features,
     )
-
 
     meals = preprocess_lists(meals)
 
@@ -52,23 +43,11 @@ def preprocess_new_meals(meals, scaler, vectorizers):
 
     meals = convert_booleans(meals)
 
+    meals, _ = create_text_features(meals, training=False, vectorizers=vectorizers)
 
-    meals, _ = create_text_features(
-        meals,
-        training=False,
-        vectorizers=vectorizers
-    )
-
-
-    meals, _ = scale_numerical_features(
-        meals,
-        training=False,
-        scaler=scaler
-    )
-
+    meals, _ = scale_numerical_features(meals, training=False, scaler=scaler)
 
     return meals
-
 
 
 def create_user_vector(user_id, dataset):
@@ -76,61 +55,35 @@ def create_user_vector(user_id, dataset):
     Create user preference vector from saved meals.
     """
 
-    user_meals = dataset[
-        dataset["user_id"] == user_id
-    ]
+    user_meals = dataset[dataset["user_id"] == user_id]
 
     if user_meals.empty:
-        raise ValueError(
-            "User has no saved meals"
-        )
+        raise ValueError("User has no saved meals")
 
+    user_features = user_meals.drop(columns=["user_id"])
 
-    user_features = user_meals.drop(
-        columns=["user_id"]
-    )
-
-
-    user_vector = user_features.mean(
-        axis=0
-    )
+    user_vector = user_features.mean(axis=0)
 
     return user_vector
 
 
-
 def recommend_meals(
-    user_id,
-    user_dataset,
-    processed_candidates,
-    original_candidates,
-    top_n=5
+    user_id, user_dataset, processed_candidates, original_candidates, top_n=5
 ):
     """
     Rank meals using cosine similarity.
     """
 
-    user_vector = create_user_vector(
-        user_id,
-        user_dataset
-    )
-
+    user_vector = create_user_vector(user_id, user_dataset)
 
     similarities = cosine_similarity(
-        user_vector.values.reshape(1, -1),
-        processed_candidates
+        user_vector.values.reshape(1, -1), processed_candidates
     )[0]
-
 
     recommendations = original_candidates.copy()
 
     recommendations["similarity"] = similarities
 
-
-    recommendations = recommendations.sort_values(
-        by="similarity",
-        ascending=False
-    )
-
+    recommendations = recommendations.sort_values(by="similarity", ascending=False)
 
     return recommendations.head(top_n)

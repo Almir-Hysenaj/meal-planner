@@ -1,14 +1,15 @@
+from pathlib import Path
+
 import pandas as pd
 from db import conn
-from pathlib import Path
 from preprocess import (
-    preprocess_lists,
-    drop_unused_columns,
     convert_booleans,
-    encode_categories,
     create_text_features,
+    drop_unused_columns,
+    encode_categories,
+    preprocess_lists,
+    save_preprocessors,
     scale_numerical_features,
-    save_preprocessors
 )
 
 BASE_DIR = Path(__file__).resolve().parent

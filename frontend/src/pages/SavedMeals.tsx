@@ -98,22 +98,7 @@ const SavedMeals = ({ user, setUser }: SavedMealsProps) => {
 
         {/* Empty state */}
         {savedMeals.length === 0 ? (
-          <div
-            className="
-          flex
-          min-h-75
-          flex-col
-          items-center
-          justify-center
-          rounded-2xl
-          border
-          border-dashed
-          border-gray-300
-          bg-gray-50
-          px-6
-          text-center
-        "
-          >
+          <div className="flex min-h-75 flex-col items-center justify-center rounded-2xl border border-dashed border-gray-300 bg-gray-50 px-6 text-center">
             <h2 className="text-xl font-semibold text-gray-800">
               No saved meals yet
             </h2>
@@ -124,15 +109,7 @@ const SavedMeals = ({ user, setUser }: SavedMealsProps) => {
           </div>
         ) : (
           /* Meal grid */
-          <div
-            className="
-          grid
-          grid-cols-1
-          gap-6
-          sm:grid-cols-2
-          lg:grid-cols-3
-        "
-          >
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {savedMeals.map((meal) => (
               <MealCard
                 key={meal.meal_id}

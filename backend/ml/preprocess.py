@@ -1,20 +1,16 @@
+from pathlib import Path
+
+import joblib
 import pandas as pd
-from sklearn.preprocessing import OneHotEncoder
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.preprocessing import StandardScaler
-import joblib
-from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
 MODEL_DIR = BASE_DIR / "models"
 
+
 def preprocess_lists(df):
-    list_columns = [
-        "cuisines",
-        "dish_types",
-        "diets",
-        "ingredients"
-    ]
+    list_columns = ["cuisines", "dish_types", "diets", "ingredients"]
 
     for column in list_columns:
         df[column] = df[column].apply(
@@ -33,20 +29,13 @@ def drop_unused_columns(df):
         "created_at",
     ]
 
-    df = df.drop(
-        columns=columns_to_drop,
-        errors="ignore"
-    )
+    df = df.drop(columns=columns_to_drop, errors="ignore")
 
     return df
 
+
 def convert_booleans(df):
-    boolean_columns = [
-        "vegetarian",
-        "vegan",
-        "gluten_free",
-        "dairy_free"
-    ]
+    boolean_columns = ["vegetarian", "vegan", "gluten_free", "dairy_free"]
 
     for column in boolean_columns:
         df[column] = df[column].astype(int)
@@ -58,17 +47,8 @@ def encode_categories(df):
     return df, None
 
 
-def create_text_features(
-    df,
-    training=True,
-    vectorizers=None
-):
-    text_columns = [
-        "ingredients",
-        "cuisines",
-        "dish_types",
-        "diets"
-    ]
+def create_text_features(df, training=True, vectorizers=None):
+    text_columns = ["ingredients", "cuisines", "dish_types", "diets"]
 
     if vectorizers is None:
         vectorizers = {}
@@ -76,13 +56,10 @@ def create_text_features(
     text_features = []
 
     for column in text_columns:
-
         if training:
-
             vectorizer = TfidfVectorizer()
 
             if len(df[column]) > 1 and df[column].str.strip().any():
-
                 try:
                     vectors = vectorizer.fit_transform(df[column])
 
@@ -97,7 +74,6 @@ def create_text_features(
                 continue
 
         else:
-
             if column not in vectorizers:
                 continue
 
@@ -106,10 +82,7 @@ def create_text_features(
 
         vector_df = pd.DataFrame(
             vectors.toarray(),
-            columns=[
-                f"{column}_{word}"
-                for word in vectorizer.get_feature_names_out()
-            ]
+            columns=[f"{column}_{word}" for word in vectorizer.get_feature_names_out()],
         )
 
         text_features.append(vector_df)
@@ -118,10 +91,7 @@ def create_text_features(
         df = pd.concat(
             [
                 df.reset_index(drop=True),
-                *[
-                    feature.reset_index(drop=True)
-                    for feature in text_features
-                ],
+                *[feature.reset_index(drop=True) for feature in text_features],
             ],
             axis=1,
         )
@@ -130,11 +100,8 @@ def create_text_features(
 
     return df, vectorizers
 
-def scale_numerical_features(
-    df,
-    training=True,
-    scaler=None
-):
+
+def scale_numerical_features(df, training=True, scaler=None):
 
     numerical_columns = [
         "ready_in_minutes",
@@ -142,22 +109,16 @@ def scale_numerical_features(
         "calories",
         "protein",
         "carbs",
-        "fat"
+        "fat",
     ]
 
     if training:
-
         scaler = StandardScaler()
 
-        df[numerical_columns] = scaler.fit_transform(
-            df[numerical_columns]
-        )
+        df[numerical_columns] = scaler.fit_transform(df[numerical_columns])
 
     else:
-
-        df[numerical_columns] = scaler.transform(
-            df[numerical_columns]
-        )
+        df[numerical_columns] = scaler.transform(df[numerical_columns])
 
     return df, scaler
 
@@ -166,19 +127,10 @@ def save_preprocessors(encoder, vectorizers, scaler):
 
     MODEL_DIR.mkdir(exist_ok=True)
 
-    joblib.dump(
-        encoder,
-        MODEL_DIR / "category_encoder.pkl"
-    )
+    joblib.dump(encoder, MODEL_DIR / "category_encoder.pkl")
 
-    joblib.dump(
-        vectorizers,
-        MODEL_DIR / "text_vectorizers.pkl"
-    )
+    joblib.dump(vectorizers, MODEL_DIR / "text_vectorizers.pkl")
 
-    joblib.dump(
-        scaler,
-        MODEL_DIR / "scaler.pkl"
-    )
+    joblib.dump(scaler, MODEL_DIR / "scaler.pkl")
 
     print("Preprocessors saved")

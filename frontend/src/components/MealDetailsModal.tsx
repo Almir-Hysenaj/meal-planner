@@ -15,38 +15,11 @@ const MealDetailsModal = ({
 }: MealDetailModalProps) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-      <div
-        className="
-      relative
-      max-h-[90vh]
-      w-full
-      max-w-4xl
-      overflow-y-auto
-      rounded-3xl
-      bg-white
-      shadow-2xl
-    "
-      >
+      <div className="relative max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-3xl bg-white shadow-2xl">
         {/* Close */}
         <button
           onClick={onClose}
-          className="
-          absolute
-          right-5
-          top-5
-          z-10
-          flex
-          h-10
-          w-10
-          items-center
-          justify-center
-          rounded-full
-          bg-white/90
-          text-gray-600
-          shadow
-          hover:bg-white
-          cursor-pointer
-        "
+          className="absolute right-5 top-5 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-gray-600 shadow hover:bg-white cursor-pointer"
         >
           ✕
         </button>
@@ -56,33 +29,11 @@ const MealDetailsModal = ({
           <img
             src={meal.image}
             alt={meal.title}
-            className="
-            h-80
-            w-full
-            object-cover
-          "
+            className="h-80 w-full object-cover"
           />
 
-          <div
-            className="
-          absolute
-          bottom-0
-          left-0
-          right-0
-          bg-linear-to-t
-          from-black/90
-          to-transparent
-          p-8
-        "
-          >
-            <h2
-              className="
-            max-w-3xl
-            text-3xl
-            font-bold
-            text-white
-          "
-            >
+          <div className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/90 to-transparent p-8">
+            <h2 className="max-w-3xl text-3xl font-bold text-white">
               {meal.title}
             </h2>
           </div>
@@ -90,15 +41,7 @@ const MealDetailsModal = ({
 
         <div className="p-8">
           {/* Nutrition cards */}
-          <div
-            className="
-          mb-8
-          grid
-          grid-cols-2
-          gap-4
-          md:grid-cols-4
-        "
-          >
+          <div className="mb-8 grid grid-cols-2 gap-4 md:grid-cols-4">
             {[
               {
                 label: 'Calories',
@@ -129,24 +72,10 @@ const MealDetailsModal = ({
                 unit: 'g',
               },
             ].map((item) => (
-              <div
-                key={item.label}
-                className="
-                rounded-2xl
-                bg-emerald-50
-                p-4
-              "
-              >
+              <div key={item.label} className="rounded-2xl bg-emerald-50 p-4">
                 <p className="text-sm text-gray-500">{item.label}</p>
 
-                <p
-                  className="
-                mt-1
-                text-2xl
-                font-bold
-                text-emerald-700
-              "
-                >
+                <p className="mt-1 text-2xl font-bold text-emerald-700">
                   {Math.round(item.value ?? 0)}
                   {item.unit}
                 </p>
@@ -166,15 +95,7 @@ const MealDetailsModal = ({
               .map((tag) => (
                 <span
                   key={tag as string}
-                  className="
-                  rounded-full
-                  bg-emerald-100
-                  px-4
-                  py-1.5
-                  text-sm
-                  font-medium
-                  text-emerald-700
-                "
+                  className="rounded-full bg-emerald-100 px-4 py-1.5 text-sm font-medium text-emerald-700"
                 >
                   {tag}
                 </span>
@@ -182,15 +103,7 @@ const MealDetailsModal = ({
           </div>
 
           {/* Recipe info */}
-          <div
-            className="
-          mb-8
-          grid
-          grid-cols-1
-          gap-4
-          md:grid-cols-3
-        "
-          >
+          <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-3">
             <div className="rounded-xl bg-gray-50 p-4">
               <p className="text-sm text-gray-500">Cooking Time</p>
               <p className="font-semibold">{meal.readyInMinutes} mins</p>
@@ -210,35 +123,13 @@ const MealDetailsModal = ({
           </div>
 
           {/* Ingredients */}
-          <h3
-            className="
-          mb-4
-          text-2xl
-          font-bold
-        "
-          >
-            Ingredients
-          </h3>
+          <h3 className="mb-4 text-2xl font-bold">Ingredients</h3>
 
-          <div
-            className="
-          mb-8
-          grid
-          grid-cols-1
-          gap-2
-          md:grid-cols-2
-        "
-          >
+          <div className="mb-8 grid grid-cols-1 gap-2 md:grid-cols-2">
             {meal.extendedIngredients?.map((ingredient: any) => (
               <div
                 key={ingredient.id}
-                className="
-                rounded-lg
-                bg-gray-50
-                px-4
-                py-3
-                text-gray-700
-              "
+                className="rounded-lg bg-gray-50 px-4 py-3 text-gray-700"
               >
                 {ingredient.original}
               </div>
@@ -251,30 +142,14 @@ const MealDetailsModal = ({
               href={meal.sourceUrl}
               target="_blank"
               rel="noreferrer"
-              className="
-              rounded-xl
-              bg-emerald-600
-              px-6
-              py-3
-              font-medium
-              text-white
-              transition
-              hover:bg-emerald-700
-            "
+              className="rounded-xl bg-emerald-600 px-6 py-3 font-medium text-white transition hover:bg-emerald-700"
             >
               View Recipe
             </a>
 
             <button
               onClick={isSaved ? onUnsave : onSave}
-              className={`
-              rounded-xl
-              px-6
-              py-3
-              font-medium
-              text-white
-              transition
-              cursor-pointer
+              className={`rounded-xl px-6 py-3 font-medium text-white transition cursor-pointer
               ${
                 isSaved
                   ? 'bg-red-500 hover:bg-red-600'

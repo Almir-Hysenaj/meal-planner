@@ -50,16 +50,7 @@ const Navbar = ({ user, setUser }: NavbarProps) => {
 
               <button
                 onClick={handleLogout}
-                className="
-                  rounded-lg
-                  bg-white
-                  px-3
-                  py-2
-                  text-emerald-700
-                  hover:bg-gray-100
-                  transition
-                  cursor-pointer
-                "
+                className="rounded-lg bg-white px-3 py-2 text-emerald-700 hover:bg-gray-100 transition cursor-pointer"
               >
                 Logout
               </button>
@@ -75,15 +66,7 @@ const Navbar = ({ user, setUser }: NavbarProps) => {
 
               <Link
                 to="/register"
-                className="
-                  rounded-lg
-                  bg-white
-                  px-3
-                  py-2
-                  text-emerald-700
-                  hover:bg-gray-100
-                  transition
-                "
+                className="rounded-lg bg-white px-3 py-2 text-emerald-700 hover:bg-gray-100 transition"
               >
                 Register
               </Link>
@@ -102,16 +85,7 @@ const Navbar = ({ user, setUser }: NavbarProps) => {
 
       {/* Mobile dropdown */}
       {menuOpen && (
-        <div
-          className="
-          md:hidden
-          border-t
-          border-emerald-600
-          bg-emerald-700
-          px-4
-          pb-4
-        "
-        >
+        <div className="md:hidden border-t border-emerald-600 bg-emerald-700 px-4 pb-4">
           {user ? (
             <div className="flex flex-col gap-2">
               <Link
@@ -132,14 +106,7 @@ const Navbar = ({ user, setUser }: NavbarProps) => {
 
               <button
                 onClick={handleLogout}
-                className="
-                  rounded-lg
-                  bg-white
-                  px-3
-                  py-2
-                  text-left
-                  text-emerald-700
-                "
+                className="rounded-lg bg-white px-3 py-2 text-left text-emerald-700"
               >
                 Logout
               </button>

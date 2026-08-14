@@ -329,19 +329,7 @@ const Profile = ({ user, setUser }: ProfileProps) => {
             {/* Submit */}
             <button
               type="submit"
-              className="
-              w-full
-              rounded-lg
-              bg-emerald-600
-              px-4
-              py-3
-              font-medium
-              text-white
-              transition
-              hover:bg-emerald-700
-              active:scale-[0.99]
-              cursor-pointer
-            "
+              className="w-full rounded-lg bg-emerald-600 px-4 py-3 font-medium text-white transition hover:bg-emerald-700 active:scale-[0.99] cursor-pointer"
             >
               {profileExists ? 'Update Profile' : 'Create Profile'}
             </button>
