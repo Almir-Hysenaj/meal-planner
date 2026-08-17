@@ -9,6 +9,7 @@ BASE_DIR = Path(__file__).resolve().parent
 MODEL_DIR = BASE_DIR / "models"
 
 
+# Convert list based columns into text based
 def preprocess_lists(df):
     list_columns = ["cuisines", "dish_types", "diets", "ingredients"]
 
@@ -20,6 +21,7 @@ def preprocess_lists(df):
     return df
 
 
+# Remove unnecessary columns
 def drop_unused_columns(df):
     columns_to_drop = [
         "id",
@@ -34,6 +36,7 @@ def drop_unused_columns(df):
     return df
 
 
+# Convert into integer values
 def convert_booleans(df):
     boolean_columns = ["vegetarian", "vegan", "gluten_free", "dairy_free"]
 
@@ -47,6 +50,7 @@ def encode_categories(df):
     return df, None
 
 
+# Convert into numerical values
 def create_text_features(df, training=True, vectorizers=None):
     text_columns = ["ingredients", "cuisines", "dish_types", "diets"]
 
@@ -59,6 +63,7 @@ def create_text_features(df, training=True, vectorizers=None):
         if training:
             vectorizer = TfidfVectorizer()
 
+            # Only create vetorizer if there is enough data
             if len(df[column]) > 1 and df[column].str.strip().any():
                 try:
                     vectors = vectorizer.fit_transform(df[column])
@@ -87,6 +92,7 @@ def create_text_features(df, training=True, vectorizers=None):
 
         text_features.append(vector_df)
 
+    # Add back to original dataframe
     if text_features:
         df = pd.concat(
             [
@@ -101,6 +107,7 @@ def create_text_features(df, training=True, vectorizers=None):
     return df, vectorizers
 
 
+# Make numerical values on the same scale
 def scale_numerical_features(df, training=True, scaler=None):
 
     numerical_columns = [

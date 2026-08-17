@@ -40,7 +40,7 @@ const MessageModal = ({ type, message, onClose }: MessageModalProps) => {
           onClick={onClose}
           className="text-xl text-gray-400 hover:text-gray-600 cursor-pointer"
         >
-          ×
+          ✕
         </button>
       </div>
     </div>

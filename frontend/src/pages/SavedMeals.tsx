@@ -89,7 +89,6 @@ const SavedMeals = ({ user, setUser }: SavedMealsProps) => {
       <Navbar user={user} setUser={setUser} />
 
       <div className="mx-auto min-h-screen max-w-7xl px-4 py-8 sm:px-6 lg:px-8 pt-25">
-        {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Saved Meals</h1>
 

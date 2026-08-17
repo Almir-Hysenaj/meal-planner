@@ -108,6 +108,7 @@ const Home = ({ user, error, setUser }: HomeProps) => {
     }
   };
 
+  // Connvert meal details returned from API into usable format
   const buildSavedMeal = (meal: any) => {
     const getNutrient = (name: string) =>
       meal.nutrition.nutrients.find((n: any) => n.name === name)?.amount;
@@ -207,6 +208,7 @@ const Home = ({ user, error, setUser }: HomeProps) => {
   };
 
   const handleClearFilters = async () => {
+    // Default values
     const defaultFilters = {
       sort: 'popularity',
       diet: '',
