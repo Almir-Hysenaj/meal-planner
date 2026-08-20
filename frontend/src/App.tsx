@@ -52,7 +52,13 @@ function App() {
       <Routes>
         <Route
           path="/"
-          element={<Home user={user} error={error} setUser={setUser} />}
+          element={
+            user ? (
+              <Home user={user} error={error} setUser={setUser} />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
         />
         <Route
           path="/login"

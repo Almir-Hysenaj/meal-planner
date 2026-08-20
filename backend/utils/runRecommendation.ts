@@ -7,7 +7,10 @@ const __dirname = path.dirname(__filename);
 
 export function runRecommendation(userId: number, meals: any[]): Promise<any> {
   return new Promise((resolve, reject) => {
-    const pythonPath = path.join(__dirname, '../ml/venv/Scripts/python.exe');
+    const pythonPath =
+      process.platform === 'win32'
+        ? path.join(__dirname, '../ml/venv/Scripts/python.exe')
+        : 'python3';
 
     const scriptPath = path.join(__dirname, '../ml/recommend.py');
 
