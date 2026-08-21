@@ -2,8 +2,6 @@ services:
   backend:
     build:
       context: ./backend
-    ports:
-      - '5000:5000'
     env_file:
       - ./backend/.env
 
@@ -11,6 +9,6 @@ services:
     build:
       context: ./frontend
     ports:
-      - '5173:80'
+      - '80:80'
     depends_on:
       - backend
