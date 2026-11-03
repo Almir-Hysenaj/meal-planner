@@ -70,9 +70,12 @@ def create_user_vector(user_id, dataset):
 def recommend_meals(
     user_id, user_dataset, processed_candidates, original_candidates, top_n=5
 ):
-    """
-    Rank meals using cosine similarity.
-    """
+    user_meals = user_dataset[user_dataset["user_id"] == user_id]
+
+    if user_meals.empty:
+        recommendations = original_candidates.copy()
+        recommendations["similarity"] = 0.0
+        return recommendations.head(top_n)
 
     user_vector = create_user_vector(user_id, user_dataset)
 
@@ -81,9 +84,6 @@ def recommend_meals(
     )[0]
 
     recommendations = original_candidates.copy()
-
     recommendations["similarity"] = similarities
 
-    recommendations = recommendations.sort_values(by="similarity", ascending=False)
-
-    return recommendations.head(top_n)
+    return recommendations.sort_values(by="similarity", ascending=False).head(top_n)
